@@ -1,0 +1,7 @@
+/* Twoslash hover popover tweaks: keep them readable on top of VitePress code blocks. */
+.twoslash-popup-container {
+  font-size: 0.85em;
+}
+.twoslash .twoslash-popup-info {
+  border-radius: 6px;
+}

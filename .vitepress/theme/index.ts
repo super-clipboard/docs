@@ -1,5 +1,9 @@
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
+import TwoslashFloatingVue from "@shikijs/vitepress-twoslash/client";
+
+import "@shikijs/vitepress-twoslash/style.css";
+import "./twoslash.css";
 
 const STORAGE_KEY = "super-clipboard-docs-locale-redirected";
 
@@ -31,7 +35,8 @@ function maybeRedirect(): void {
 
 const theme: Theme = {
   extends: DefaultTheme,
-  enhanceApp() {
+  enhanceApp({ app }) {
+    app.use(TwoslashFloatingVue);
     maybeRedirect();
   },
 };

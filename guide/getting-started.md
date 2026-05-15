@@ -1,71 +1,53 @@
 # Getting Started
 
-> Write your first Super Clipboard user script in under five minutes.
+> Super Clipboard is a clipboard manager that runs inside [uTools](https://u.tools/):
+> it captures every copy you make (text / image / file) and exposes a scriptable
+> extension surface.
 
-## 1. Scaffold a script
+## 1. Install
 
-A user script is a single TypeScript file with a Tampermonkey-style header. The
-minimum viable header looks like this:
+1. Open uTools (default <kbd>⌥</kbd> + <kbd>Space</kbd> / <kbd>Alt</kbd> + <kbd>Space</kbd>).
+2. Open *Plugin Marketplace*, search for **超级剪贴板 Next** ("Super Clipboard Next"), click *Install*.
+3. Reopen uTools and type `sc` (or `clipboard`) to launch.
 
-```ts
-// ==UserScript==
-// @name         Hello Super Clipboard
-// @namespace    com.example.hello
-// @version      0.1.0
-// @grant        globalNativeApi.registerMenuCommand
-// @grant        globalNativeApi.getClipBody
-// ==/UserScript==
-```
+The first launch silently downloads a small native helper
+(macOS / Windows / Linux, ~1–2 MB) used to capture the system clipboard.
 
-Every API used at runtime must appear in an `@grant` line. The host enforces
-this — calls outside the granted set throw at the bridge layer.
+## 2. Enable "Auto-launch with uTools"
 
-## 2. Add types for autocomplete
+In uTools' plugin manager, find Super Clipboard and turn on
+**Launch with uTools** so the listener starts as soon as uTools does.
+Otherwise the listener only starts after you manually open the plugin.
 
-Install the type package:
+## 3. Core concepts
 
-```bash
-pnpm add -D @super-clipboard/userscript-types
-```
+| Concept | Meaning |
+|---------|---------|
+| **clip** | One captured copy event, automatically deduped by content hash |
+| **type** | `text` / `image` / `file` |
+| **pinned / starred / tags** | Three independent annotation axes — see [Pinned, Starred & Tags](./pinned-and-tags) |
+| **userscript** | A Tampermonkey-style extension: menu commands, listeners, panels |
 
-Then enable it via either a triple-slash reference at the top of your script:
+## 4. First use
 
-```ts
-/// <reference types="@super-clipboard/userscript-types" />
-```
+1. The plugin opens on the **History** page. Copy any text — a new row appears at the top.
+2. <kbd>↑</kbd> <kbd>↓</kbd> to browse, <kbd>Enter</kbd> to paste back into the previous app.
+3. <kbd>`</kbd> (backtick) toggles the right-side preview panel.
+4. **Right-click** any row for actions: copy, pin, tag, run script…
 
-…or add it project-wide in `tsconfig.json`:
+## 5. Optional: clipboard permission
 
-```json
-{
-  "compilerOptions": {
-    "types": ["@super-clipboard/userscript-types"]
-  }
-}
-```
+In most cases uTools already has clipboard access from regular use, so the
+plugin works out of the box and **no extra permission is needed**.
+Only if newly copied content is not being recorded should you check below:
 
-## 3. Register a menu command
+- **macOS** — in *System Settings → Privacy & Security*, confirm uTools has
+  *Accessibility* and *Clipboard* access.
+- **Windows** — usually no extra permission needed.
+- **Linux** — relies on `xclip` / `wl-clipboard` (usually preinstalled).
 
-```ts
-const id = globalNativeApi.registerMenuCommand(
-  "Copy as link",
-  async (ctx) => {
-    const target = ctx.clips[0];
-    if (target?.type !== "text") return;
-    const body = await globalNativeApi.getClipBody(target);
-    if (body?.type === "text" && body.text) {
-      utools.copyText(`<${body.text}>`);
-    }
-  },
-  { kind: "text" },
-);
-```
+## 6. Where next
 
-Right-clicking any text clip will now show **Copy as link** as a menu entry.
-
-## 4. Where to next
-
-- [`globalNativeApi` reference](/reference/global-native-api) — every method, with
-  examples and notes on async semantics.
-- The package's [`spec.d.ts`](https://github.com/super-clipboard/userscript-types/blob/main/spec.d.ts)
-  is the single source of truth and is updated together with the host.
+- [Feature overview](./features)
+- [Settings](./settings)
+- Want to write a script? Jump to [Scripts overview](/scripts/overview).

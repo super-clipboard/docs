@@ -9,7 +9,9 @@
     "preview": "vitepress preview"
   },
   "devDependencies": {
+    "@shikijs/vitepress-twoslash": "^4.0.2",
     "@super-clipboard/userscript-types": "link:../userscript-types",
+    "typescript": "^6.0.3",
     "vitepress": "^1.5.0",
     "vue": "^3.5.13"
   },

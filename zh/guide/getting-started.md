@@ -1,70 +1,56 @@
-# 快速开始
+# 安装与首次使用
 
-> 五分钟写出第一个 Super Clipboard 自定义脚本。
+> Super Clipboard 是一个运行在 [uTools](https://u.tools/) 内的剪贴板管理插件：
+> 持续抓取你复制的文本、图片和文件，并提供脚本扩展能力。
 
-## 1. 创建脚本
+## 1. 安装插件
 
-自定义脚本是带 Tampermonkey 风格头部注释的单文件 TypeScript。最小可运行示例：
+1. 打开 uTools，呼出主搜索框（默认 <kbd>⌥</kbd> + <kbd>Space</kbd> / <kbd>Alt</kbd> + <kbd>Space</kbd>）。
+2. 输入「插件应用市场」并回车。
+3. 搜索 **超级剪贴板 Next**，点击 *安装*。
+4. 安装完成后，再次呼出 uTools，输入 `sc` 或 `剪贴板` 即可进入插件。
 
-```ts
-// ==UserScript==
-// @name         Hello Super Clipboard
-// @namespace    com.example.hello
-// @version      0.1.0
-// @grant        globalNativeApi.registerMenuCommand
-// @grant        globalNativeApi.getClipBody
-// ==/UserScript==
-```
+> 首次启动时，插件会在后台静默下载与你系统匹配的原生依赖
+> （macOS / Windows / Linux 均支持），约 1–2 MB，下载完成后才能开始监听。
 
-所有运行时使用的 API 都必须在 `@grant` 中声明。宿主在 bridge 层会强制检查 ——
-未授权的调用会直接抛错。
+## 2. 开启「跟随主程序同时启动」
 
-## 2. 引入类型补全
+为了让 Super Clipboard 在 uTools 启动时一并拉起、持续抓取剪贴板，
+建议在 uTools 的「插件管理」里找到本插件，开启 **跟随主程序同时启动** 选项。
+否则只有手动呼出过插件后，监听才会开始工作。
 
-安装类型包：
+## 3. 关键概念
 
-```bash
-pnpm add -D @super-clipboard/userscript-types
-```
+| 概念 | 说明 |
+|------|------|
+| **条目（clip）** | 每一次复制产生一条记录，按内容哈希自动去重 |
+| **类型（type）** | `text` / `image` / `file` 三种，对应不同列表 Tab |
+| **置顶 / 收藏 / 标签** | 三套独立的高亮维度，参见 [置顶、收藏与标签](./pinned-and-tags) |
+| **脚本（userscript）** | Tampermonkey 风格的扩展，可往右键菜单注入命令、读写条目、弹出面板 |
 
-然后用以下任一方式启用 —— 在脚本顶部加三斜线引用：
+## 4. 第一次使用
 
-```ts
-/// <reference types="@super-clipboard/userscript-types" />
-```
+1. 进入插件后，会停留在 **历史** 页。复制任意文本，列表顶部会立刻出现新条目。
+2. 用 <kbd>↑</kbd> <kbd>↓</kbd> 浏览，按 <kbd>Enter</kbd> 直接粘贴到上一个聚焦的窗口。
+3. 按 <kbd>`</kbd>（反引号）切换右侧 **预览面板**，预览长文本、图片或文件信息。
+4. 在条目上 **右键** 打开操作菜单：复制、置顶、添加标签、调用脚本……
 
-…或在 `tsconfig.json` 中全局开启：
+> 监听器以独立子进程长驻；只要插件被启动过，即便你关闭 uTools 窗口，
+> 新复制的条目仍会进入历史。
 
-```json
-{
-  "compilerOptions": {
-    "types": ["@super-clipboard/userscript-types"]
-  }
-}
-```
+## 5. 按需：授予剪贴板权限
 
-## 3. 注册一个菜单命令
+绝大多数情况下，uTools 在你日常使用过程中已经获得过剪贴板访问权限，
+本插件可以直接工作，**无需额外授权**。
+只有当你发现新的复制内容没有被记录时，才需要按下面的提示检查权限：
 
-```ts
-const id = globalNativeApi.registerMenuCommand(
-  "复制为链接",
-  async (ctx) => {
-    const target = ctx.clips[0];
-    if (target?.type !== "text") return;
-    const body = await globalNativeApi.getClipBody(target);
-    if (body?.type === "text" && body.text) {
-      utools.copyText(`<${body.text}>`);
-    }
-  },
-  { kind: "text" },
-);
-```
+- **macOS**：在「系统设置 → 隐私与安全性」里确认 uTools 拥有
+  「**辅助功能**」与「**剪贴板访问**」权限。
+- **Windows**：通常无需额外授权。
+- **Linux**：依赖系统剪贴板服务（`xclip` / `wl-clipboard`），多数发行版默认提供。
 
-右键任意文本剪贴项，就能看到 **复制为链接** 这条菜单。
+## 6. 接下来
 
-## 4. 接下来
-
-- [`globalNativeApi` 参考](/zh/reference/global-native-api) —— 每个方法的签名、
-  示例与异步语义注释
-- 类型包的 [`spec.d.ts`](https://github.com/super-clipboard/userscript-types/blob/main/spec.d.ts)
-  是唯一权威源，与宿主同步发布
+- [功能总览](./features) — 一页看完插件所有能力
+- [设置项](./settings) — 监听过滤、过期清理、外观、日志等
+- 想自己写脚本？跳到 [脚本系统概述](/zh/scripts/overview)
