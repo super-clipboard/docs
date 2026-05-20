@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: true
+
+# Exempt our own packages from pnpm v11's default 24h supply-chain quarantine
+# so freshly published releases can be consumed by CI immediately.
+minimumReleaseAgeExclude:
+  - '@super-clipboard/*'
