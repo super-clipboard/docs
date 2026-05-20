@@ -1,0 +1,28 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./.typedoc-entry.ts"],
+  "tsconfig": "./typedoc.tsconfig.json",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-vitepress-theme"],
+  "out": "./reference/api",
+  "readme": "none",
+  "hideGenerator": true,
+  "useCodeBlocks": true,
+  "expandObjects": true,
+  "expandParameters": true,
+  "parametersFormat": "table",
+  "propertiesFormat": "table",
+  "enumMembersFormat": "table",
+  "typeDeclarationFormat": "table",
+  "indexFormat": "table",
+  "sidebar": {
+    "autoConfiguration": true,
+    "format": "vitepress",
+    "pretty": true,
+    "collapsed": false
+  },
+  "fileExtension": ".md",
+  "entryFileName": "index.md",
+  "excludeExternals": false,
+  "excludePrivate": true,
+  "excludeInternal": true
+}
