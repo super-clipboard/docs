@@ -20,16 +20,24 @@ function maybeRedirect(): void {
   if (window.sessionStorage.getItem(STORAGE_KEY)) return;
   window.sessionStorage.setItem(STORAGE_KEY, "1");
 
+  // 站点部署在 GitHub Pages 项目子路径下（如 `/docs/`）。必须基于 BASE_URL 计算
+  // locale，否则 `/docs/` 会被错误地重定向到 `/zh/docs/`（404）。
+  // VitePress 在客户端注入 Vite 的 `import.meta.env.BASE_URL`，但本项目根 tsconfig
+  // 没有引入 `vite/client` 类型，故做一次安全断言。
+  const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL || "/";
   const path = window.location.pathname;
+  const relative = path.startsWith(base) ? path.slice(base.length) : path.replace(/^\/+/, "");
+
   // Already in a locale subpath — leave alone.
-  if (path.startsWith("/zh")) return;
+  if (relative === "zh" || relative.startsWith("zh/")) return;
 
   const langs = navigator.languages?.length ? navigator.languages : [navigator.language];
   const prefersZh = langs.some((l) => l && l.toLowerCase().startsWith("zh"));
   if (!prefersZh) return;
 
+  const normalizedBase = base.endsWith("/") ? base : base + "/";
   const target =
-    "/zh" + (path === "/" ? "/" : path) + window.location.search + window.location.hash;
+    normalizedBase + "zh/" + relative + window.location.search + window.location.hash;
   window.location.replace(target);
 }
 
