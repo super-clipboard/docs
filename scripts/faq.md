@@ -4,10 +4,13 @@
 
 Check:
 
-1. Form is exact: `@grant utools.*` or `@grant globalNativeApi.*`. Subset
-   forms like `@grant utools.copyText` are not accepted.
+1. Each method needs its own `@grant` line, either fine-grained
+   (`@grant utools.copyText`, `@grant globalNativeApi.saveFile`) or via
+   the wildcard (`@grant utools.*`). A grant for one method does *not*
+   cover others in the same namespace.
 2. The method isn't on the [utools denylist](./grants#utools-denylist) —
-   `utools.db*`, `setFeature`, payment, `on*`, etc.
+   `utools.db*`, `setFeature`, payment, `on*`, etc. — those stay blocked
+   even with `@grant utools.*`.
 3. The metadata header isn't accidentally inside `/* */` — the parser only
    reads `// @key value` lines.
 

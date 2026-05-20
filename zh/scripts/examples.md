@@ -14,7 +14,9 @@ declare const QRCodeEncoder: {
   toSVG(modules: unknown): string;
 };
 // ---cut---
-// @grant globalNativeApi.*
+// @grant globalNativeApi.registerMenuCommand
+// @grant globalNativeApi.getClipBody
+// @grant globalNativeApi.showPanel
 // @require https://registry.npmmirror.com/qrcode-encoder/1.3.0/files/dist/iife/qrcode-encoder.iife.js#sha256-…
 
 globalNativeApi.registerMenuCommand("生成二维码", async (ctx) => {
@@ -47,8 +49,10 @@ declare const Segmentit: {
   useDefault: (s: unknown) => { doSegment(text: string, opt?: { simple?: boolean }): string[] };
 };
 // ---cut---
-// @grant utools.*
-// @grant globalNativeApi.*
+// @grant utools.copyText
+// @grant globalNativeApi.registerMenuCommand
+// @grant globalNativeApi.getClipBody
+// @grant globalNativeApi.showPanel
 
 const seg = Segmentit.useDefault(new Segmentit.Segment());
 
@@ -82,7 +86,9 @@ globalNativeApi.registerMenuCommand("智慧分词", async (ctx) => {
 ## 3. 另存为（`getClipBody` + `saveFile`）
 
 ```ts twoslash
-// @grant globalNativeApi.*
+// @grant globalNativeApi.registerMenuCommand
+// @grant globalNativeApi.getClipBody
+// @grant globalNativeApi.saveFile
 
 globalNativeApi.registerMenuCommand("另存为...", async (ctx) => {
   const targets = ctx.clips ?? [];
@@ -117,7 +123,9 @@ globalNativeApi.registerMenuCommand("另存为...", async (ctx) => {
 
 ```ts twoslash
 // @noErrors
-// @grant globalNativeApi.*
+// @grant globalNativeApi.addClipboardListener
+// @grant globalNativeApi.getClipBody
+// @grant globalNativeApi.setClipMetadata
 // @run-at background
 
 globalNativeApi.addClipboardListener("image", async (e) => {
@@ -144,8 +152,12 @@ declare function runOcr(bytes: Uint8Array): Promise<string>;
 ## 5. 复制为 Markdown 链接（带 `info` 自标识）
 
 ```ts twoslash
-// @grant globalNativeApi.*
-// @grant utools.*
+// @grant globalNativeApi.registerMenuCommand
+// @grant globalNativeApi.getClipBody
+// @grant globalNativeApi.notification
+// @grant globalNativeApi.info
+// @grant globalNativeApi.log
+// @grant utools.copyText
 
 const tag = `[${globalNativeApi.info.name} v${globalNativeApi.info.version}]`;
 

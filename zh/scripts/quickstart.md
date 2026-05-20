@@ -18,8 +18,10 @@
 // @description  右键文本条目 → 把 URL 包成 [text](url)
 // @run-at       foreground
 // @match-clip   text
-// @grant        globalNativeApi.*
-// @grant        utools.*
+// @grant        globalNativeApi.registerMenuCommand
+// @grant        globalNativeApi.getClipBody
+// @grant        globalNativeApi.notification
+// @grant        utools.copyText
 // ==/UserScript==
 
 globalNativeApi.registerMenuCommand(
@@ -55,12 +57,15 @@ globalNativeApi.registerMenuCommand(
 ### `@grant`
 
 ```text
-// @grant        globalNativeApi.*
-// @grant        utools.*
+// @grant        globalNativeApi.registerMenuCommand
+// @grant        globalNativeApi.getClipBody
+// @grant        globalNativeApi.notification
+// @grant        utools.copyText
 ```
 
-仅声明这两个**粗粒度** scope；未声明则对应全局为 `undefined`，
-且 bridge 会以 `GRANT_DENIED` 拒绝调用。详见 [Grants](./grants)。
+逐个列出脚本用到的方法（细粒度授权）。未声明的 API 在脚本里为 `undefined`，
+bridge 也会以 `GRANT_DENIED` 拒绝。开发阶段可以先用 `@grant utools.*` /
+`@grant globalNativeApi.*` 通配联调，发布前再收紧。详见 [Grants](./grants)。
 
 ### `@match-clip`
 

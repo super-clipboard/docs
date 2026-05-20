@@ -4,10 +4,13 @@
 
 只声明了对应的 `@grant`，还是被拒？检查：
 
-1. 写法是否完整：`@grant utools.*` 或 `@grant globalNativeApi.*`，
-   不接受细粒度 `@grant utools.copyText`。
+1. 每个用到的方法都要有自己的 `@grant`行，允许细粒度
+   （`@grant utools.copyText`、`@grant globalNativeApi.saveFile`）或通配
+   （`@grant utools.*`）。某个方法的 grant **不会覆盖**同 namespace
+   下的其他方法。
 2. 是否调用了 [utools 黑名单](./grants#utools-黑名单)中的方法，
-   例如 `utools.db`、`utools.setFeature`、`utools.openPayment`。
+   例如 `utools.db`、`utools.setFeature`、`utools.openPayment` ——
+   即使声明了 `@grant utools.*` 也仍然被拒。
 3. 元数据头有没有被注释掉（`/* */` 包住）—— 解析器跳过非 `// @key` 形式的行。
 
 ## `@require` 加载失败 / SRI 校验不过

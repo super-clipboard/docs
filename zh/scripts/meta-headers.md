@@ -30,7 +30,7 @@
 | `@icon` | — | URL | 列表中的图标 |
 | `@run-at` | `foreground` | `foreground` / `background` | `background` 表示后台常驻、不绑定主窗口可见性 |
 | `@match-clip` | 全部 | `text` / `image` / `file`，可多次 | 限定菜单出现的 clip 类型 |
-| `@grant` | — | `utools.*` / `globalNativeApi.*` | 见下文与 [Grants](./grants) |
+| `@grant` | — | `<namespace>.<method>` 或 `<namespace>.*`，namespace 为 `utools` / `globalNativeApi` | 见下文与 [Grants](./grants) |
 | `@require` | — | `https://...#sha256-...` | 加载外部 JS（必须 SRI 校验） |
 | `@timeout` | 30 000 ms | 1 ~ 120 000 | 单次 callback 调用的超时上限 |
 | `@updateURL` | — | URL / `internal://<id>` | 升级源；`internal://` 走内置脚本 |
@@ -41,15 +41,20 @@
 
 ## `@grant` 详解
 
-只接受两个值：
+`@grant` 的格式是 `<namespace>.<method>` 或 `<namespace>.*`，namespace 为
+`utools` 或 `globalNativeApi`。每用到一个 API 都重复一行：
 
 ```text
-// @grant        utools.*
-// @grant        globalNativeApi.*
+// @grant   utools.copyText
+// @grant   utools.showNotification
+// @grant   globalNativeApi.registerMenuCommand
+// @grant   globalNativeApi.getClipBody
+// @grant   globalNativeApi.saveFile
 ```
 
-任何其他写法（包括细粒度的 `@grant utools.copyText`）都会以 `META_FIELD_INVALID` 拒绝。
-详细授权语义见 [Grant 与沙箱](./grants)。
+通配形式（`@grant utools.*`、`@grant globalNativeApi.*`）也被接受，
+但**仅推荐在开发联调阶段使用**，发布前请改为逐个方法的细粒度声明。
+详细授权语义见 [Grant 与权限](./grants)。
 
 ## `@require` 与 SRI
 
@@ -97,7 +102,9 @@ globalNativeApi.registerMenuCommand("Decode QR", onDecode, {
 // @author       SuperClipboard
 // @run-at       foreground
 // @match-clip   text
-// @grant        globalNativeApi.*
+// @grant        globalNativeApi.registerMenuCommand
+// @grant        globalNativeApi.getClipBody
+// @grant        globalNativeApi.showPanel
 // @require      https://registry.npmmirror.com/qrcode-encoder/1.3.0/files/dist/iife/qrcode-encoder.iife.js#sha256-5KyVbh3LWYvV9VB/OSCGI2JLqBoIulvKW0af8TISAMA=
 // @tag          text
 // @tag          utility

@@ -34,7 +34,7 @@ super-clipboard/userscripts/
 
    该脚本会调用 `@super-clipboard/userscript` 的 parser，检查：
    - 元数据字段完整 / 合法
-   - `@grant` 在白名单内
+   - `@grant` 格式符合 `<utools|globalNativeApi>.<方法名-或-*>`
    - `@require` URL 在白名单注册表 + 含 SRI
    - 文件名 / 目录名与 `@namespace` 末段匹配
 
@@ -78,4 +78,8 @@ maintainer 会评估是否纳入。
   会出现在市场筛选里。
 - **Timeout** 评估单次回调的最坏耗时，避免默认 30 s 偏长（OCR 等长任务除外）。
 - **依赖最小化** 优先用 iframe 内置 API；外部库通过 `@require` 引入并锁定具体版本。
+- **发布前收紧 `@grant`** —— 尽量用细粒度写法
+  （`@grant utools.copyText`）而不是通配（`@grant utools.*`），
+  使用者可以在安装前清楚看到脚本使用了哪些 API。详见
+  [Grant 与权限](./grants)。
 - **`globalNativeApi.error`** 写日志而不是 `throw` —— 让用户能在脚本管理页看见。

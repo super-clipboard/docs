@@ -8,8 +8,10 @@ Every script starts with a Tampermonkey-style header:
 // @namespace    com.example.md-link
 // @version      0.1.0
 // @description  Wraps the focused text clip as a Markdown auto-link.
-// @grant        utools.*
-// @grant        globalNativeApi.*
+// @grant        utools.copyText
+// @grant        globalNativeApi.registerMenuCommand
+// @grant        globalNativeApi.getClipBody
+// @grant        globalNativeApi.notification
 // @match-clip   text
 // ==/UserScript==
 ```
@@ -30,7 +32,7 @@ Every script starts with a Tampermonkey-style header:
 | `@author` | — | |
 | `@homepage` | — | URL shown in the script manager |
 | `@icon` | — | URL or `data:` |
-| `@grant` | none | Repeatable; only `utools.*` and `globalNativeApi.*` accepted |
+| `@grant` | none | Repeatable; `<namespace>.<method-or-wildcard>` where namespace is `utools` or `globalNativeApi` |
 | `@require` | — | URL to external lib; **must include SRI** |
 | `@match-clip` | all | Repeatable: `text` / `image` / `file` |
 | `@run-at` | `on-demand` | `on-demand` / `background` |
@@ -40,14 +42,22 @@ Every script starts with a Tampermonkey-style header:
 
 ## `@grant`
 
+Grants follow the shape `<namespace>.<method>` or `<namespace>.*`, where
+namespace is either `utools` or `globalNativeApi`. Repeat the line for
+each API you need:
+
 ```text
-// @grant   utools.*
-// @grant   globalNativeApi.*
+// @grant   utools.copyText
+// @grant   utools.showNotification
+// @grant   globalNativeApi.registerMenuCommand
+// @grant   globalNativeApi.getClipBody
+// @grant   globalNativeApi.saveFile
 ```
 
-Only these two tokens are accepted. **No** fine-grained subsets like
-`@grant utools.copyText`. See [Grants & Sandbox](./grants) for what's
-actually exposed.
+The wildcard form (`@grant utools.*`, `@grant globalNativeApi.*`) is
+accepted for convenience during development but should be tightened to
+specific method names before publishing — see
+[Grants & Permissions](./grants).
 
 ## `@require` + SRI
 

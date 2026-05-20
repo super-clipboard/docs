@@ -21,8 +21,10 @@ echo '/// <reference types="@super-clipboard/userscript-types" />' > my-script.u
 // @namespace    com.example.md-link
 // @version      0.1.0
 // @description  Wraps the focused text clip as a Markdown auto-link.
-// @grant        utools.*
-// @grant        globalNativeApi.*
+// @grant        utools.copyText
+// @grant        globalNativeApi.registerMenuCommand
+// @grant        globalNativeApi.getClipBody
+// @grant        globalNativeApi.notification
 // @match-clip   text
 // ==/UserScript==
 
@@ -68,5 +70,5 @@ globalNativeApi.registerMenuCommand(
 Read on:
 
 - [Meta headers](./meta-headers) — what every `@key` means.
-- [Grants & Sandbox](./grants) — security model.
+- [Grants & Permissions](./grants) — fine-grained authorization model.
 - [Examples](./examples) — more patterns.

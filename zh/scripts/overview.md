@@ -1,82 +1,89 @@
 # 脚本系统概述
 
-> Super Clipboard 提供 Tampermonkey 风格的用户脚本系统：单文件 TypeScript / JavaScript，
-> 配合元数据头声明权限，运行在隔离沙箱中。
+> Super Clipboard 内置 Tampermonkey 风格的用户脚本系统：
+> 单文件 `.user.ts` / `.user.js`，配合元数据头声明权限，
+> 即可在剪贴板上扩展右键命令、后台监听、浮窗面板与脚本级存储。
 
-## 设计原则
+## 脚本能做什么
 
-1. **零构建** —— 直接写一份 `.user.ts` / `.user.js`，无需打包工具。
-2. **类型优先** —— 全部 API 由 `@super-clipboard/userscript-types` 提供 `.d.ts`，IDE 即时补全。
-3. **沙箱隔离** —— 每个脚本运行在独立 iframe（`sandbox="allow-scripts allow-downloads"`），
-   不能触达宿主内部模块。
-4. **粗粒度授权** —— 仅两个 `@grant` 标记（`utools.*` / `globalNativeApi.*`），
-   未声明则不注入对应全局。
-5. **白名单子集** —— uTools 原生 API 经[黑名单](./grants#utools-黑名单)过滤后暴露，
-   屏蔽 `db*` / `setFeature` / 支付 / 账号等敏感接口。
+| 能力 | 给用户/开发者的意义 |
+|------|--------------------|
+| **自定义右键命令** | 在文本 / 图片 / 文件剪贴项的菜单里追加任意操作。 |
+| **后台监听** | 在剪贴板有新条目时实时响应（自动 OCR、去重、自动打标签…）。 |
+| **浮窗面板** | 在历史列表旁边渲染你自己的 UI，做小工具、预览、对话框等。 |
+| **脚本级存储** | 在你的脚本独占的 KV 空间里保存设置与缓存。 |
+| **标注剪贴项** | 为 clip 写回 metadata（OCR 文本、语言、自定义标签），随后即可被搜索。 |
+| **保存 / 复制文件** | 把图片 clip 直接落盘，或把本地文件复制到用户选定的目录。 |
+| **复用 uTools 能力** | 调用宿主提供的 `utools.*`（复制文本、打开链接、系统对话框…）。 |
+| **加载外部资源** | 通过 `fetch` 请求接口；通过 `@require` 引入第三方库（必须带 SRI 校验）。 |
 
-## 运行模型
+脚本只关心「做什么」，菜单渲染、事件分发、权限校验、生命周期管理都由宿主负责。
 
+## 60 秒感受一下
+
+```ts
+// ==UserScript==
+// @name         复制为 Markdown 链接
+// @namespace    com.example.md-link
+// @version      0.1.0
+// @match-clip   text
+// @grant        utools.copyText
+// @grant        globalNativeApi.registerMenuCommand
+// @grant        globalNativeApi.getClipBody
+// @grant        globalNativeApi.notification
+// ==/UserScript==
+
+globalNativeApi.registerMenuCommand("复制为 Markdown 链接", async (ctx) => {
+  const ref = ctx.clips[0];
+  if (ref?.type !== "text") return;
+  const body = await globalNativeApi.getClipBody(ref);
+  if (body?.type !== "text" || !body.text) return;
+  utools.copyText(`<${body.text.trim()}>`);
+  await globalNativeApi.notification({ body: "已复制为 Markdown" });
+});
 ```
-┌──────────────────────────────────────────────────┐
-│ Super Clipboard 主窗口（宿主）                    │
-│                                                  │
-│  ┌────────────────────────────────────────────┐  │
-│  │ <iframe sandbox="allow-scripts allow-...">│  │
-│  │   • 你的脚本代码                            │  │
-│  │   • 按需注入的 globalNativeApi / utools     │  │
-│  │   ↕ postMessage 位于 iframe 与宿主之间       │  │
-│  └────────────────────────────────────────────┘  │
-│           ↓ bridge 路由（权限校验 / 超时 / 错误码）  │
-│           ↓                                       │
-│        宿主提供的原生能力（剪贴板 / 文件 / 通知 / OCR）│
-└──────────────────────────────────────────────────┘
-```
 
-- **iframe** —— 脚本的实际执行容器；有自己的 `document`，可挂任意 DOM。
-- **bridge** —— 宿主端的消息路由，所有 API 调用都经此转发；
-  负责权限校验、参数序列化、错误归因（错误码包括 `GRANT_DENIED` / `BRIDGE_TIMEOUT` 等）。
-- **原生能力** —— 剪贴板读写、文件 IO、系统通知、OCR 等由宿主统一提供；
-  脚本不需（也无法）直接接触底层进程或文件系统。
+整段脚本到此为止 —— 在 *设置 → 脚本 → 新建* 里粘贴保存，
+任意文本剪贴项的右键菜单里就会出现这条命令。完整流程见 [5 分钟上手](./quickstart)。
 
-## 注入到 iframe 的全局
+## 注入的两个全局
 
-| 全局 | 启用条件 | 来源 |
-|------|----------|------|
-| `globalNativeApi` | `@grant globalNativeApi.*` | 项目自有（[Reference](/zh/reference/global-native-api)） |
-| `utools` | `@grant utools.*` | uTools 原生（去掉黑名单），见 [Grants](./grants) |
-| `console` / `fetch` / `setTimeout` … | 始终可用 | iframe 默认 |
+脚本运行时**可能**拿到两个全局对象 —— 取决于你在 `@grant` 里申请了哪些 API：
 
-未声明 grant 的全局会被 `delete` 掉；即使脚本绕过 IDE 检查直接调用，
-bridge 也会以 `GRANT_DENIED` 拒绝。
+| 全局 | 用来做什么 |
+|------|-----------|
+| `globalNativeApi` | 本项目特有能力：菜单、剪贴项读写、KV、面板、文件 IO、OCR 写回、日志。 |
+| `utools` | 宿主公开的 [uTools API](https://www.u.tools/docs/developer/api.html)：复制文本、调起浏览器、原生对话框等。少量管理 / 支付 API 被屏蔽，详见 [Grants](./grants)。 |
 
-## 生命周期
+未声明的 API 都是 `undefined`。**始终申请最小必要的权限** ——
+推荐用细粒度的 API 级 `@grant`（如 `@grant utools.copyText`、
+`@grant globalNativeApi.saveFile`），这样用户一眼就能看清你的脚本碰了什么。
 
-| 时机 | 说明 |
-|------|------|
-| **解析** | 启动时 / 安装时校验元数据 |
-| **加载** | 按需创建 iframe；同一脚本只持有一个 iframe（重新触发会复用） |
-| **执行** | iframe `srcdoc` 内联脚本源码 + bootstrap |
-| **常驻** | iframe 不销毁；`closePanel()` 仅修改样式，DOM 与 JS 状态保留 |
-| **卸载** | 用户在脚本管理页禁用 / 删除时，iframe 才被移除 |
+## 触发模式
 
-`@run-at` 暂仅 `foreground`（仅在主窗口可见时执行）与 `background`（无界面长驻）两档。
+| `@run-at` | 什么时候加载 |
+|-----------|-------------|
+| `foreground`（默认） | 用户打开主窗口后按需加载。适合菜单命令这类需要 UI 的脚本。 |
+| `background` | 插件启动即加载，与主窗口可见性无关。适合纯监听器。 |
 
 ## 内置脚本
 
-仓库自带几个示例脚本，首次启动种入：
+仓库自带几个脚本，既开箱即用、也是最直观的示例：
 
-| 脚本 | 用途 | 演示要点 |
-|------|------|---------|
-| **二维码生成** | 把当前文本生成二维码 | `@require` 外部 UMD + `showPanel` |
-| **智慧分词** | 中文分词浮窗 | `utools.copyText` + DOM 交互 |
-| **另存为** | 文本 / 图片下载 | `getClipBody` + `saveFile` |
-| **自动 OCR 标注** | 后台 OCR 写回 metadata | `addClipboardListener` + `setClipMetadata` |
+| 名称 | 作用 |
+|------|------|
+| **二维码生成** | 把当前文本生成二维码并在浮窗显示。 |
+| **智慧分词** | 中文/混合文本分词，在浮窗里点选复制。 |
+| **另存为…** | 文本 / 图片 clip 落盘，或选择目录直接写入。 |
+| **自动 OCR 标注** | 后台监听新图片并写回 OCR 文本，让图片能用文字搜索。 |
 
-可参考 [示例集](./examples) 的逐行解析。
+任一脚本都可以卸载；卸载后插件不会静默重装。
 
-## 接下来
+## 下一步
 
-- [5 分钟上手](./quickstart) —— 完整跑通一个脚本
-- [元数据头](./meta-headers) —— 所有 `@directive` 一览
-- [Grant 与沙箱](./grants) —— 授权模型 + uTools 黑名单
-- [API 参考](/zh/reference/global-native-api) —— 每个方法 + 类型化示例
+- [5 分钟上手](./quickstart) —— 完整跑通一个脚本。
+- [元数据头](./meta-headers) —— 所有 `@key` 一览。
+- [Grant 与权限](./grants) —— 细粒度授权模型。
+- [示例集](./examples) —— 常见场景拷贝即用。
+- [发布脚本](./publishing) —— 把脚本推到市场。
+- [`globalNativeApi` 参考](/zh/reference/global-native-api) —— 完整方法列表。

@@ -18,7 +18,7 @@ globalNativeApi.info;
 | [Subscriptions](#subscriptions) | sync | `addClipboardListener` `removeClipboardListener` `addAppListener` `addPanelListener` |
 | [Data](#data) | async | `getClipBody` `setClipMetadata` |
 | [KV](#kv) | async | `setValue` `getValue` `deleteValue` `listValues` |
-| [I/O](#io) | async | `notification` `saveFile` |
+| [I/O](#io) | async | `notification` `saveFile` `copyLocalFile` |
 | [Logging](#logging) | sync | `log` `warn` `error` |
 | [Panel](#panel) | async | `showPanel` `resizePanel` `closePanel` |
 | [Meta](#meta) | sync | `info` |
@@ -202,9 +202,25 @@ if (body?.type === "image" && body.bytes) {
 ```
 
 - `content`: `string` / `Uint8Array` / `ArrayBuffer`.
-- Current implementation triggers a browser download via `<a download>` from
-  inside the iframe. **Final path is not returned.**
+- Pass `options.targetDir` to write the file directly to that directory
+  (requires the Node environment provided by uTools).
+- Without `targetDir`, falls back to a browser-style `<a download>` from
+  the iframe; in that case the final path is not returned.
 - `mime` controls the *Save as…* dialog default extension.
+
+### `copyLocalFile(srcPath, destPath)`
+
+```ts twoslash
+await globalNativeApi.copyLocalFile(
+  "/Users/me/Downloads/source.png",
+  "/Users/me/Pictures/dest.png",
+);
+```
+
+- Copies a local file or directory to another path in supported Node
+  environments. Directories are copied recursively.
+- Useful when handling `file`-type clips, or when the user picks a source
+  path from the script's own panel.
 
 ---
 

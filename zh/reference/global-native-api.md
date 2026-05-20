@@ -17,7 +17,7 @@ globalNativeApi.info;
 | [事件订阅](#事件订阅) | 同步 | `addClipboardListener` `removeClipboardListener` `addAppListener` `addPanelListener` |
 | [数据读写](#数据读写) | 异步 | `getClipBody` `setClipMetadata` |
 | [KV 存储](#kv-存储) | 异步 | `setValue` `getValue` `deleteValue` `listValues` |
-| [输出 / IO](#输出-io) | 异步 | `notification` `saveFile` |
+| [输出 / IO](#输出-io) | 异步 | `notification` `saveFile` `copyLocalFile` |
 | [日志](#日志) | 同步 | `log` `warn` `error` |
 | [面板](#面板) | 异步 | `showPanel` `resizePanel` `closePanel` |
 | [元信息](#元信息) | 同步 | `info` |
@@ -201,8 +201,22 @@ if (body?.type === "image" && body.bytes) {
 ```
 
 - `content` 接受 `string` / `Uint8Array` / `ArrayBuffer`。
-- 当前实现走 iframe 的 `<a download>` 触发浏览器下载，**不返回最终路径**。
-- `mime` 影响系统的「保存为」对话框默认扩展名。
+- 传入 `options.targetDir` 后，文件会直接写入该目录（依赖安装在 uTools 中的 Node 环境）；
+  未指定时退回浏览器下载行为（使用 `<a download>` 触发，不返回路径）。
+- `mime` 影响保存对话框默认扩展名。
+
+### `copyLocalFile(srcPath, destPath)`
+
+```ts twoslash
+await globalNativeApi.copyLocalFile(
+  "/Users/me/Downloads/source.png",
+  "/Users/me/Pictures/dest.png",
+);
+```
+
+- 在支持的 Node 环境下把本地文件或目录复制到另一个路径。
+- 传入目录时会递归复制。
+- 常用于文件类 clip、脚本面板里选定的任意路径。
 
 ---
 

@@ -1,90 +1,111 @@
-# Grant 与沙箱
+# Grant 与权限
 
-> Super Clipboard 的脚本权限模型**只有两个开关**。声明哪个 grant，就注入对应的全局；
-> 没声明，对应全局直接 `undefined`。
+脚本必须通过 `@grant` 声明它要使用的每个 API。宿主在调用时校验声明，
+未声明的 API 会**立刻**以 `BridgeError { code: "GRANT_DENIED" }` 失败，
+避免静默扩权。
 
-## 两个 Grant Token
+> **一句话** —— 发布脚本时请逐个列出方法
+> （`@grant utools.copyText`、`@grant globalNativeApi.saveFile`）。
+> 通配 `@grant utools.*` 仅推荐在开发联调阶段使用，发布前请收紧。
 
-```ts twoslash
-// @noErrors
-import { GRANT_TOKENS } from "@super-clipboard/userscript-engine/meta/grants";
-
-GRANT_TOKENS;
-// ^?
-```
-
-| Token | 注入的全局 | 典型用途 |
-|-------|-----------|---------|
-| `utools.*` | `utools` | 复制 / 通知 / 调起浏览器 / 文件选择 |
-| `globalNativeApi.*` | `globalNativeApi` | 项目自有的剪贴板 / 面板 / KV / 文件 IO |
-
-声明方式（多次调用，不要写一行）：
+## 两个命名空间，两种粒度
 
 ```text
-// @grant        utools.*
-// @grant        globalNativeApi.*
+@grant <namespace>.<method-or-wildcard>
+       │           │
+       │           └── 方法名，例如 `copyText`
+       │               或 `*` 代表整个命名空间
+       └── `utools` | `globalNativeApi`
 ```
 
-## utools 黑名单
-
-`utools.*` 暴露的不是完整 uTools API，而是经黑名单过滤后的子集。
-
-被屏蔽的方法：
-
-| 类别 | 方法 | 屏蔽原因 |
+| 粒度 | 示例 | 适用场景 |
 |------|------|---------|
-| **数据库** | `db` `dbStorage` `dbCryptoStorage` | 脚本应用 `globalNativeApi.{set,get}Value` 隔离的 KV，不直接读写宿主主库 |
-| **特性注册** | `setFeature` `removeFeature` | 与宿主插件配置冲突 |
-| **支付 / 账号** | `openPayment` `fetchUserPayments` `openPurchase` `isPurchasedUser` `getUserServerTemporaryToken` `fetchUserServerTemporaryToken` | 敏感，无脚本使用场景 |
-| **生命周期** | 所有以 `on` 开头的方法（`onPluginEnter` 等） | 脚本应通过 `globalNativeApi.addAppListener` 订阅，宿主统一多路复用 |
+| **细粒度**（推荐） | `@grant utools.copyText` | 生产 / 发布脚本：用户能一眼看清你碰了哪些 API；后续 uTools 新增方法也不会偷偷扩大你的权限面。 |
+| **通配** | `@grant utools.*` | 仅本地开发：方便快速试 API，不用每加一个方法就改 header。发布前请改为细粒度列表。 |
 
-调用被屏蔽的方法会抛 `TypeError`（属性为 `undefined`）。
+两种风格可以混写、可重复：
 
-## `globalNativeApi` 概览
-
-完整签名见 [API 参考](/zh/reference/global-native-api)。一句话分类：
-
-| 分类 | 方法 |
-|------|------|
-| 菜单 | `registerMenuCommand` / `unregisterMenuCommand` |
-| 监听 | `addClipboardListener` / `addAppListener` / `addPanelListener` / `removeClipboardListener` |
-| 数据 | `getClipBody` / `setClipMetadata` |
-| KV | `setValue` / `getValue` / `deleteValue` / `listValues` |
-| 输出 | `notification` / `log` / `warn` / `error` / `saveFile` |
-| 面板 | `showPanel` / `resizePanel` / `closePanel` |
-| 元信息 | `info` |
-
-## 沙箱细节
-
-每个脚本运行在独立 `<iframe>`：
-
-```html
-<iframe sandbox="allow-scripts allow-downloads" srcdoc="...">
+```text
+// @grant   utools.copyText
+// @grant   utools.showNotification
+// @grant   globalNativeApi.registerMenuCommand
+// @grant   globalNativeApi.getClipBody
+// @grant   globalNativeApi.saveFile
 ```
 
-- **`allow-scripts`** —— 允许执行 JS（必需）。
-- **`allow-downloads`** —— 让 `globalNativeApi.saveFile` 触发的 `<a download>` 真正下载。
-- **`allow-same-origin` 缺失** —— iframe 处于 *opaque origin*；
-  无法访问宿主 `localStorage` / `cookie` / 父窗口 DOM。
-- **postMessage IPC** —— `utools.*` / `globalNativeApi.*` 全部走父子窗口通信。
-  调用都是 Promise（即使 utools 原签名同步）。
+## 校验规则
 
-## Bridge 错误码
+bridge 在每次调用时检查：**该 `namespace.method` 是否在你的 `@grant` 列表里？
+或者你是否声明了对应的通配？**
 
-脚本捕获到的 `BridgeError.code` 可能取值：
+| 你声明了 | `utools.copyText` 通过 | `globalNativeApi.saveFile` 通过 |
+|----------|----------------------|--------------------------------|
+| （没有） | ❌ `GRANT_DENIED` | ❌ `GRANT_DENIED` |
+| `utools.*` | ✅ | ❌ |
+| `utools.copyText` | ✅ | ❌ |
+| `globalNativeApi.*` | ❌ | ✅ |
+| `utools.*` + `globalNativeApi.saveFile` | ✅ | ✅ |
 
-| code | 含义 |
-|------|------|
-| `GRANT_DENIED` | 调用了未在 `@grant` 中声明的 scope |
-| `METHOD_NOT_FOUND` | 方法名拼错 / utools 黑名单 |
-| `BRIDGE_TIMEOUT` | 单次调用超出 `@timeout`（默认 30 s） |
-| `INVALID_PARAMS` | 参数序列化失败 / 类型校验未过 |
-| `INTERNAL_ERROR` | 宿主侧异常（详细信息走 `globalNativeApi.error`） |
+注入的全局对象（`utools`、`globalNativeApi`）只有在你声明了该 namespace 下
+**至少一个** grant 时才会出现。未申请的方法在对象上根本不存在。
 
-## 没有 `xmlhttpRequest` / `@connect`
+> **免授权 API**：`globalNativeApi.info`、`log`、`warn`、`error`
+> **无需任何 grant**，纯属诊断辅助。
 
-不同于 Tampermonkey，本项目**故意不暴露** `GM_xmlhttpRequest`。需要联网时：
+## `utools.*` 黑名单
 
-- 走 iframe 的原生 `fetch` —— 受同源策略限制，目标 server 必须开 CORS。
-- 或用 `utools.shellOpenExternal` 让用户在浏览器里完成跨域操作。
-- 重要数据走 `globalNativeApi.setValue` 持久化，不要假定网络长期可用。
+即便声明了 `@grant utools.*`（或单独列了下面某个名字），宿主仍然拒绝暴露它们，
+访问时返回 `undefined` / `GRANT_DENIED`：
+
+| 类别 | 黑名单方法 | 原因 |
+|------|-----------|------|
+| **KV / DB** | `db`、`dbStorage`、所有 `db*` | KV 必须走 `globalNativeApi`，以保证按脚本 namespace 隔离。 |
+| **插件生命周期** | `setFeature`、`removeFeature`、`getFeatures` | 否则脚本可以冒充 / 劫持 uTools 功能。 |
+| **账号 / 支付** | `openPayment`、`fetchUserServerTemporaryToken`、`getUser*` | 钓鱼面，超出脚本职责。 |
+| **事件订阅** | 所有 `on*` 方法 | 请用 `globalNativeApi.addClipboardListener` / `addAppListener` / `addPanelListener`，宿主会自动清理。 |
+
+## 处理 grant 错误
+
+`BridgeError` 是带 `code` 字段的普通 `Error`：
+
+```ts twoslash
+declare const ref: SuperClipboard.ClipRef;
+// ---cut---
+try {
+  await globalNativeApi.setClipMetadata(ref, { foo: 1 });
+} catch (e) {
+  if (e instanceof Error && (e as any).code === "GRANT_DENIED") {
+    globalNativeApi.warn("缺少 @grant globalNativeApi.setClipMetadata");
+  }
+}
+```
+
+其他可能见到的 `code`：
+
+| `code` | 含义 |
+|--------|------|
+| `GRANT_DENIED` | 缺少该方法的 grant（或在黑名单中）。 |
+| `METHOD_NOT_FOUND` | 拼写错误 / 宿主版本不匹配。 |
+| `INVALID_PARAMS` | 参数结构不符合 schema。 |
+| `BRIDGE_TIMEOUT` | 单次调用超出 `@timeout`。 |
+| `INTERNAL_ERROR` | 宿主原生实现抛错。 |
+
+## 发布前收紧清单
+
+提交到 [脚本市场](./publishing) 前：
+
+1. 先以 `@grant utools.*` / `@grant globalNativeApi.*` 把脚本跑通，
+   记下实际调用过的每个方法。
+2. 把通配改成逐个方法的细粒度声明。
+3. 重新跑所有路径；如果出现 `GRANT_DENIED`，说明漏了一个调用 ——
+   或是你可以直接删掉的死代码。
+4. 最终的 header 就应该读起来像一份权限清单，用户在安装前会扫一眼。
+
+## 脚本**不能**做什么
+
+- **跨域 XHR**（Tampermonkey 的 `xmlhttpRequest`）—— 用 `fetch`，遵守 CORS。
+- **任意文件系统访问** —— 写文件用 `globalNativeApi.saveFile`，
+  复制本地文件用 `globalNativeApi.copyLocalFile`。
+- **脚本间通信** —— 用 `setClipMetadata` 标注共享 clip，
+  或者各自用 namespace 隔离的 KV 保存设置。
+- **触达宿主 DOM / Cookie** —— 脚本在隔离 iframe 中运行。

@@ -34,7 +34,7 @@ super-clipboard/userscripts/
 
    Runs the `@super-clipboard/userscript` parser and checks:
    - Required metadata fields present and well-formed
-   - Every `@grant` is whitelisted
+   - Every `@grant` follows the `<utools|globalNativeApi>.<method-or-*>` shape
    - Every `@require` is on a whitelisted registry **and** carries SRI
    - File / directory name matches the `@namespace` tail
 
@@ -78,5 +78,9 @@ and a maintainer will evaluate.
 - **Tags** (`@tag`) — at least one of `text` / `image` / `file` / `utility` / `ai` …
 - **Timeout** — tune `@timeout` to your worst-case callback (default 30 s is generous).
 - **Minimise deps** — prefer iframe-native APIs; pin every `@require` to an exact version.
+- **Tighten `@grant` lines** before publishing — prefer fine-grained
+  (`@grant utools.copyText`) over the wildcard (`@grant utools.*`). Users
+  can then audit exactly which APIs your script touches. See
+  [Grants & Permissions](./grants).
 - **Use `globalNativeApi.error`** instead of `throw` so users can see failures in
   the script manager.
