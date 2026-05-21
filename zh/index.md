@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Super Clipboard"
-  text: "可脚本化的剪贴板管理器"
-  tagline: 捕获、检索、对每一项剪贴内容做出响应 —— 用 TypeScript 自定义脚本随心扩展。
+  text: "更强大的剪贴板管理工具"
+  tagline: 支持置顶、收藏、备注、多选、跨设备云同步 —— 千万级数据量秒启，端到端加密守护隐私，可通过 TypeScript 用户脚本随心扩展。
   actions:
     - theme: brand
       text: 快速开始
@@ -17,10 +17,19 @@ hero:
       link: https://github.com/super-clipboard
 
 features:
-  - title: 一等公民的 TypeScript
-    details: 所有脚本 API 都附带手写 .d.ts 与 JSDoc 示例，IDE 中自动补全开箱即用
-  - title: 可脚本化
-    details: 订阅剪贴板事件、注册菜单命令、挂载面板 —— 都通过单一全局 globalNativeApi
-  - title: 沙箱隔离
-    details: 脚本运行于隔离上下文，仅通过类型化 bridge 与宿主交互，无法触达内部模块
+  - title: 性能优先
+    details: 不限制条数与过期时间；本地存储经过深度优化，千万级数据量也能秒启秒搜
+  - title: 隐私优先
+    details: 监听剪贴板并将新内容持续落到本地磁盘；可选启用端到端加密，跨设备同步全程密文
+  - title: 强大功能
+    details: 置顶、收藏、备注、编辑、转存、多选、高级搜索一应俱全，覆盖日常高频操作
+  - title: 跨设备同步
+    details: 借助 uTools 账户体系，无缝同步剪贴历史到所有登录设备，随时接力工作流
+  - title: 定制脚本
+    details: 一等公民的 TypeScript 脚本 API，订阅事件 / 注册命令 / 挂载面板，定制自己的剪贴板工作流
+  - title: 界面优雅
+    details: 经过精心设计的动效与交互，深度适配深色模式，长时间使用也舒适
 ---
+
+> 提示：首次安装后，请在 uTools 中将本插件设置为「跟随主程序同时启动」，以便后台持续捕获剪贴板内容。
+

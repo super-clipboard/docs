@@ -3,3 +3,4 @@ node_modules/
 .vitepress/dist/
 reference/api/
 zh/reference/api/
+.DS_Store

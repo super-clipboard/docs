@@ -167,6 +167,12 @@ export default defineConfig({
   lastUpdated: true,
   base: "/docs/",
 
+  head: [
+    ["link", { rel: "icon", type: "image/x-icon", href: "/docs/favicon.ico" }],
+    ["link", { rel: "icon", type: "image/png", sizes: "any", href: "/docs/logo.png" }],
+    ["link", { rel: "apple-touch-icon", href: "/docs/logo.png" }],
+  ],
+
   markdown: {
     codeTransformers: [
       // Renders TwoSlash hover types / `^?` markers in fenced ts/js code blocks.
@@ -188,6 +194,7 @@ export default defineConfig({
   },
 
   themeConfig: {
+    logo: "/logo.png",
     socialLinks: [{ icon: "github", link: GITHUB_URL }],
     search: {
       provider: "local",
