@@ -5,6 +5,8 @@ import TwoslashFloatingVue from "@shikijs/vitepress-twoslash/client";
 import "@shikijs/vitepress-twoslash/style.css";
 import "./twoslash.css";
 
+import PerfViewer from "./components/PerfViewer.vue";
+
 const STORAGE_KEY = "super-clipboard-docs-locale-redirected";
 
 /**
@@ -45,6 +47,7 @@ const theme: Theme = {
   extends: DefaultTheme,
   enhanceApp({ app }) {
     app.use(TwoslashFloatingVue);
+    app.component("PerfViewer", PerfViewer);
     maybeRedirect();
   },
 };

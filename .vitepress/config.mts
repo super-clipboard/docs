@@ -57,6 +57,12 @@ const enSidebar: DefaultTheme.Sidebar = {
         { text: "Settings", link: "/guide/settings" },
       ],
     },
+    {
+      text: "Debug",
+      items: [
+        { text: "Perf Viewer", link: "/guide/perf-viewer" },
+      ],
+    },
   ],
   "/scripts/": [
     {
@@ -123,6 +129,12 @@ const zhSidebar: DefaultTheme.Sidebar = {
       text: "个性化",
       items: [
         { text: "设置项", link: "/zh/guide/settings" },
+      ],
+    },
+    {
+      text: "调试",
+      items: [
+        { text: "性能日志查看器", link: "/zh/guide/perf-viewer" },
       ],
     },
   ],
