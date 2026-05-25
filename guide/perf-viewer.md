@@ -6,7 +6,7 @@ title: Perf Viewer (Debug)
 
 A purely client-side viewer for performance JSONL logs exported by
 **Super Clipboard**. Drop one or more files exported from
-`{userData}/super-clipboard-next-perf-logs/` and overlay their
+`{userData}/super-clipboard-next/perf-logs/` and overlay their
 time-series for comparison.
 
 ::: info Privacy
@@ -24,7 +24,7 @@ requests are made.
 1. Open **Settings → Debug & Performance** in Super Clipboard.
 2. Toggle **Enable performance sampling**. Sampling writes a single line
    every 5 s into `YYYY-MM-DD.jsonl` under
-   `{userData}/super-clipboard-next-perf-logs/`.
+   `{userData}/super-clipboard-next/perf-logs/`.
 3. Use the app normally for as long as you want to profile.
 4. Click **Open directory** in the same settings panel; copy the relevant
    `.jsonl` files anywhere.

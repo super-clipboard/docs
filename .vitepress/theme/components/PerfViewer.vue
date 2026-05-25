@@ -847,7 +847,7 @@ watch(shownMetrics, async () => {
 
     <div v-if="files.length === 0" class="perf-empty">
       No file loaded. Pick one or more <code>.jsonl</code> exports from
-      <code>{userData}/super-clipboard-next-perf-logs/</code>.
+      <code>{userData}/super-clipboard-next/perf-logs/</code>.
       <br />
       All parsing is local — nothing leaves the browser.
     </div>
