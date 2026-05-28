@@ -14,13 +14,17 @@ super-clipboard/userscripts/
       package.json                # optional: deps, tags
 ```
 
-`<kebab-case-id>` must equal the last segment of `@namespace`, e.g.
+`<kebab-case-id>` is the script's directory name in the repo and also the
+`.user.js` filename. Pick a short, stable, conflict-free kebab-case name, e.g.
 
-```text
-// @namespace    com.example.json-format
+```
+scripts/json-format/json-format.user.js
 ```
 
-→ directory `json-format/`.
+> Older docs required `<kebab-case-id>` to match the tail of `@namespace`.
+> From v0.5 onward `@namespace` no longer participates in script identity
+> and this constraint is dropped — script identity comes purely from the
+> published npmmirror download URL.
 
 ## Submission flow
 
@@ -36,7 +40,7 @@ super-clipboard/userscripts/
    - Required metadata fields present and well-formed
    - Every `@grant` follows the `<utools|globalNativeApi>.<method-or-*>` shape
    - Every `@require` is on a whitelisted registry **and** carries SRI
-   - File / directory name matches the `@namespace` tail
+   - File name matches its containing directory (`<id>/<id>.user.js`)
 
 4. Open a PR; CI re-runs `pnpm validate` and rebuilds `scripts.index.json`.
 5. After merge, plugins refresh the index on next launch.

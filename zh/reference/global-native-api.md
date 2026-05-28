@@ -132,28 +132,28 @@ async function demo() {
 
 返回 `null` 表示该 clip 已被宿主清理。
 
-### `setClipMetadata(ref, partial)`
+### `setClipOcrText(hash, ocrText)`
 
-把 `partial` 浅合并到 clip 的 `scriptData[<你的 @namespace>]` 里。
+把 OCR 文本写入 image clip 对应的 `ocr/{hash}` 文档——这是宿主自己
+维护的全局共享存储，所有脚本以及内置的图片文本搜索都会读取它，
+并且不会随脚本卸载而丢失。
 
 ```ts twoslash
-declare const ref: SuperClipboard.ClipRef;
+declare const clip: SuperClipboard.ClipRef & { hash: string };
 // ---cut---
-await globalNativeApi.setClipMetadata(ref, {
-  ocrText: "hello world",
-  language: "en",
-});
+await globalNativeApi.setClipOcrText(clip.hash, "hello world");
 ```
 
-- 仅能写入**自己 namespace** 下的子对象。
-- 多个脚本写不同 namespace 互不影响。
-- 写入后该字段会被全文搜索索引（如果开启了 FTS）。
+- 按图片字节的 `hash` 内容寻址——相同图片只会保留一条 OCR 记录。
+- 传空字符串可以记录“识别过、没有文字”的负向结果，避免重复识别。
+- 旧的 `setClipMetadata` / `scriptData` 通道仍在类型定义中保留为
+  `@deprecated`，但不被宿主搜索索引消费；如需写入“图片 OCR”请使用本 API。
 
 ---
 
 ## KV 存储
 
-按 `@namespace` 隔离的简单键值存储。
+按**脚本身份**（安装来源 URL 派生）隔离的简单键值存储。
 
 ```ts twoslash
 await globalNativeApi.setValue("settings", { autoOpen: true });
@@ -167,7 +167,7 @@ const keys = await globalNativeApi.listValues();
 
 - 值经 `JSON.stringify` 序列化；不要存 `Map` / `Set` / 函数。
 - `getValue<T>` 在 key 不存在时返回 `undefined`。
-- 不同脚本（不同 `@namespace`）无法读到彼此的 key。
+- 不同脚本（不同安装 URL）无法读到彼此的 key，`@namespace` 是否相同都不影响隔离。
 
 ---
 

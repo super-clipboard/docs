@@ -21,14 +21,22 @@ Every script starts with a Tampermonkey-style header:
 | Key | Notes |
 |-----|-------|
 | `@name` | Display name |
-| `@namespace` | Globally unique (reverse-DNS recommended); used as KV bucket and `scriptData` key |
 | `@version` | SemVer |
 | `@description` | One-line summary |
+
+> **About `@namespace`**: starting in v0.5 a script's identity is
+> derived entirely from its install-source URL
+> (`updateURL` / `downloadURL` / marketplace link). KV and `scriptData`
+> are isolated by this URL-derived *script id*, **not by `@namespace`**.
+> `@namespace` is now optional metadata kept for human readability — it
+> doesn't affect any runtime behaviour. A reverse-DNS string is still
+> recommended for clarity.
 
 ## Optional keys
 
 | Key | Default | Notes |
 |-----|---------|-------|
+| `@namespace` | — | Reverse-DNS-ish string. Display/identification only; no isolation effect. |
 | `@author` | — | |
 | `@homepage` | — | URL shown in the script manager |
 | `@icon` | — | URL or `data:` |

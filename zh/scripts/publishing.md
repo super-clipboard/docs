@@ -14,13 +14,16 @@ super-clipboard/userscripts/
       package.json                # 可选：声明依赖、tags
 ```
 
-`<kebab-case-id>` 必须与脚本的 `@namespace` 末段一致，例如：
+`<kebab-case-id>` 是脚本在仓库中的目录名，同时也是 `.user.js` 的文件名。
+建议直接取一个简短、稳定、不会冲突的 kebab-case 名字，例如：
 
-```text
-// @namespace    com.example.json-format
+```
+scripts/json-format/json-format.user.js
 ```
 
-→ 目录命名为 `json-format/`。
+> 早期版本要求 `<kebab-case-id>` 与 `@namespace` 末段一致；v0.5 之后
+> `@namespace` 不再参与脚本身份，此约束已取消。`@namespace` 是否存在、写
+> 什么都不影响发布——脚本身份完全由这条 npmmirror 下载链接派生。
 
 ## 提交流程
 
@@ -36,7 +39,7 @@ super-clipboard/userscripts/
    - 元数据字段完整 / 合法
    - `@grant` 格式符合 `<utools|globalNativeApi>.<方法名-或-*>`
    - `@require` URL 在白名单注册表 + 含 SRI
-   - 文件名 / 目录名与 `@namespace` 末段匹配
+   - 文件名与所在目录名一致（`<id>/<id>.user.js`）
 
 4. 提交 PR；CI 会重跑 `pnpm validate` 并构建市场索引（`scripts.index.json`）。
 5. Maintainer 审核合并后，下次插件启动会自动拉取新索引。

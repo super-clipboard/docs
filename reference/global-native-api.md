@@ -156,7 +156,8 @@ await globalNativeApi.setClipOcrText(clip.hash, "hello world");
 
 ## KV
 
-Per-`@namespace` key-value store.
+Per-script-identity key-value store (isolated by the install-source URL hash,
+not by `@namespace`).
 
 ```ts twoslash
 await globalNativeApi.setValue("settings", { autoOpen: true });
@@ -170,7 +171,8 @@ const keys = await globalNativeApi.listValues();
 
 - Values are `JSON.stringify`'d — don't store `Map` / `Set` / functions.
 - `getValue<T>` returns `undefined` if the key is missing.
-- Different scripts (different namespaces) cannot read each other's keys.
+- Different scripts (different install URLs) cannot read each other's keys;
+  matching `@namespace` values do not bridge the isolation.
 
 ---
 

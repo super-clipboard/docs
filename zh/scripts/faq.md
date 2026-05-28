@@ -50,15 +50,16 @@
 
 如需新能力，请在主仓库提 issue 讨论加入 `globalNativeApi`。
 
-## 脚本能跨 namespace 共享数据吗
+## 脚本能跨脚本共享数据吗
 
-KV 是按 `@namespace` 严格隔离的，无法直接读取其他脚本的 key。
+KV 是按**脚本身份**（安装来源 URL 派生）严格隔离的，无法直接读取其他脚本的 key。
+（注意：v0.5 起这个隔离边界不再是 `@namespace`，而是脚本的安装 URL 哈希——
+即使两个脚本写同样的 `@namespace`，它们的 KV 也互不可见。）
 
 替代方案：
 
-- 通过 `globalNativeApi.setClipMetadata` 写入 clip 自身的 `scriptData[<ns>]`，
-  其他脚本可在 `getClipBody` / `addClipboardListener` 时通过宿主返回的 `ClipMeta`
-  读取（**仅可读自己 namespace 的子对象**）。
+- 优先使用宿主提供的**公共 API**（例如 `setClipOcrText` 把 OCR 结果写入
+  全局共享的 `ocr/{hash}` store，所有脚本都能看到）。
 - 借助系统剪贴板做信号传递（不推荐，会污染历史）。
 
 ## 后台脚本 (`@run-at background`) 什么时候执行
