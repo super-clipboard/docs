@@ -77,7 +77,7 @@ KV 是按 `@namespace` 严格隔离的，无法直接读取其他脚本的 key�
 
 - 进入 **设置 → 脚本** 看错误日志（每个脚本最近一次 error 会保留）。
 - 临时禁用脚本（开关），不影响其他脚本。
-- 用 `globalNativeApi.error()` 主动写日志，比 `throw` 更易定位。
+- 用 `console.error()` 主动写日志，比 `throw` 更易定位。
 
 ## 类型补全不生效
 

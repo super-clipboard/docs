@@ -82,4 +82,4 @@ maintainer 会评估是否纳入。
   （`@grant utools.copyText`）而不是通配（`@grant utools.*`），
   使用者可以在安装前清楚看到脚本使用了哪些 API。详见
   [Grant 与权限](./grants)。
-- **`globalNativeApi.error`** 写日志而不是 `throw` —— 让用户能在脚本管理页看见。
+- **`console.error`** 写日志而不是 `throw` —— 让用户能在脚本管理页看见。

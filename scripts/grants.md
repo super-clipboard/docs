@@ -50,9 +50,11 @@ The injected globals (`utools`, `globalNativeApi`) are only present if you
 declared at least one grant in that namespace. Methods you didn't ask for
 are simply absent from the object.
 
-> **Free APIs**: `globalNativeApi.info`, `globalNativeApi.log`,
-> `globalNativeApi.warn`, `globalNativeApi.error` work without any grant —
-> they exist for diagnostics.
+> **Free APIs**: `globalNativeApi.info` works without any grant.
+> 日志记录请直接使用 `console.log` / `console.warn` / `console.error`——
+> 宿主会拦截沙箱内的 `console.*`，加上 `[script:<name>] [console]`
+> 前缀写入应用主日志文件并显示在脚本调试面板。
+> `globalNativeApi.log/warn/error` 仍可用但已 deprecated。
 
 ## `utools.*` denylist
 
@@ -78,7 +80,7 @@ try {
   await globalNativeApi.setClipOcrText(clip.hash, "hello");
 } catch (e) {
   if (e instanceof Error && (e as any).code === "GRANT_DENIED") {
-    globalNativeApi.warn("Missing @grant globalNativeApi.setClipOcrText");
+    console.warn("Missing @grant globalNativeApi.setClipOcrText");
   }
 }
 ```

@@ -82,5 +82,5 @@ and a maintainer will evaluate.
   (`@grant utools.copyText`) over the wildcard (`@grant utools.*`). Users
   can then audit exactly which APIs your script touches. See
   [Grants & Permissions](./grants).
-- **Use `globalNativeApi.error`** instead of `throw` so users can see failures in
+- **Use `console.error`** instead of `throw` so users can see failures in
   the script manager.

@@ -70,7 +70,7 @@ Unknown ids are no-ops, never throw.
 ```ts twoslash
 const onAdded = (e: SuperClipboard.ClipboardAddedEvent) => {
   //                ^?
-  globalNativeApi.log("captured", e.type, e.hash);
+  console.log("captured", e.type, e.hash);
 };
 
 globalNativeApi.addClipboardListener("added", onAdded);
@@ -228,15 +228,21 @@ await globalNativeApi.copyLocalFile(
 
 ## Logging
 
+> ⚠️ **Deprecated**：请改用 `console.log` / `console.warn` / `console.error`。
+> 宿主会拦截沙箱内的 `console.*` 调用，自动加上
+> `[script:<name>] [console]` 前缀写入应用主日志文件
+> (`utools.getPath('logs')/super-clipboard-next/...`) 并在设置 → 脚本 → 调试日志面板实时显示。
+> 以下 API 仍可用但在 spec 中已 `@deprecated`，后续版本会移除。
+
 ```ts twoslash
-globalNativeApi.log("ordinary", { hash: "abc" });
-globalNativeApi.warn("unexpected condition");
-globalNativeApi.error(new Error("boom"));
+console.log("ordinary", { hash: "abc" });
+console.warn("unexpected condition");
+console.error(new Error("boom"));
 ```
 
-- All synchronous.
-- Output is prefixed with `[script:<namespace>]` for easy filtering in uTools logs.
-- Throwing also gets logged at `error`, but explicit calls are clearer.
+- 同步调用。
+- 输出自动带上 `[script:<name>]` 前缀，便于在 uTools 日志文件中 grep。
+- 主动抛出的错误也会被宿主记在 `error` 级，但显式 `console.error` 更清晰。
 
 ---
 

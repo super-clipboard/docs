@@ -137,7 +137,7 @@ globalNativeApi.addClipboardListener("image", async (e) => {
   if (!text) return;
 
   await globalNativeApi.setClipMetadata(e, { ocrText: text });
-  globalNativeApi.log("ocr written", e.hash, text.length);
+  console.log("ocr written", e.hash, text.length);
 });
 
 declare function runOcr(bytes: Uint8Array): Promise<string>;
@@ -156,7 +156,6 @@ declare function runOcr(bytes: Uint8Array): Promise<string>;
 // @grant globalNativeApi.getClipBody
 // @grant globalNativeApi.notification
 // @grant globalNativeApi.info
-// @grant globalNativeApi.log
 // @grant utools.copyText
 
 const tag = `[${globalNativeApi.info.name} v${globalNativeApi.info.version}]`;
@@ -170,7 +169,7 @@ globalNativeApi.registerMenuCommand("复制为 Markdown 链接", async (ctx) => 
   try {
     const u = new URL(body.text.trim());
     utools.copyText(`[${u.hostname}](${u.href})`);
-    globalNativeApi.log(tag, "copied", u.href);
+    console.log(tag, "copied", u.href);
   } catch {
     await globalNativeApi.notification("当前内容不是合法 URL");
   }

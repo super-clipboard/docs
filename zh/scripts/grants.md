@@ -49,8 +49,11 @@ bridge 在每次调用时检查：**该 `namespace.method` 是否在你的 `@gra
 注入的全局对象（`utools`、`globalNativeApi`）只有在你声明了该 namespace 下
 **至少一个** grant 时才会出现。未申请的方法在对象上根本不存在。
 
-> **免授权 API**：`globalNativeApi.info`、`log`、`warn`、`error`
-> **无需任何 grant**，纯属诊断辅助。
+> **免授权 API**：`globalNativeApi.info` 无需任何 grant。
+> 记录日志请直接使用 `console.log` / `console.warn` / `console.error`——
+> 宿主会拦截沙箱内的 `console.*`，加上 `[script:<name>] [console]`
+> 前缀写入应用主日志文件并显示在脚本调试面板。
+> `globalNativeApi.log/warn/error` 仍可用但已 deprecated。
 
 ## `utools.*` 黑名单
 
@@ -75,7 +78,7 @@ try {
   await globalNativeApi.setClipMetadata(ref, { foo: 1 });
 } catch (e) {
   if (e instanceof Error && (e as any).code === "GRANT_DENIED") {
-    globalNativeApi.warn("缺少 @grant globalNativeApi.setClipMetadata");
+    console.warn("缺少 @grant globalNativeApi.setClipMetadata");
   }
 }
 ```

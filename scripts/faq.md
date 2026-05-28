@@ -85,7 +85,7 @@ KV is **strictly per-script-identity**. Workarounds:
 
 - *Settings → Scripts* keeps the last error per script.
 - Toggle the script off — others keep working.
-- Prefer `globalNativeApi.error()` over `throw`; it surfaces in the same UI.
+- Prefer `console.error()` over `throw`; it surfaces in the same UI.
 
 ## Type IntelliSense isn't working
 
