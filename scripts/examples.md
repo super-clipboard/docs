@@ -101,7 +101,7 @@ globalNativeApi.addClipboardListener("image", async (e) => {
   if (body?.type !== "image" || !body.bytes) return;
   const text = await callOcr(body.bytes);
   if (!text) return;
-  await globalNativeApi.setClipMetadata(e, { ocrText: text });
+  await globalNativeApi.setClipOcrText(e.hash, text);
   globalNativeApi.log("ocr done", e.hash, text.length);
 });
 ```

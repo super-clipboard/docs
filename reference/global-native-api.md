@@ -16,7 +16,7 @@ globalNativeApi.info;
 |----------|--------------|---------|
 | [Menu](#menu) | sync | `registerMenuCommand` `unregisterMenuCommand` |
 | [Subscriptions](#subscriptions) | sync | `addClipboardListener` `removeClipboardListener` `addAppListener` `addPanelListener` |
-| [Data](#data) | async | `getClipBody` `setClipMetadata` |
+| [Data](#data) | async | `getClipBody` `setClipOcrText` |
 | [KV](#kv) | async | `setValue` `getValue` `deleteValue` `listValues` |
 | [I/O](#io) | async | `notification` `saveFile` `copyLocalFile` |
 | [Logging](#logging) | sync | `log` `warn` `error` |
@@ -133,22 +133,24 @@ async function demo() {
 
 `null` means the host has cleaned up that clip.
 
-### `setClipMetadata(ref, partial)`
+### `setClipOcrText(hash, ocrText)`
 
-Shallow-merge `partial` into the clip's `scriptData[<your @namespace>]`.
+Persist OCR text for an image clip. Writes to the host-owned `ocr/{hash}`
+document — the same store consumed by the built-in image text search, so
+the result is visible across all scripts and survives uninstall.
 
 ```ts twoslash
-declare const ref: SuperClipboard.ClipRef;
+declare const clip: SuperClipboard.ClipRef & { hash: string };
 // ---cut---
-await globalNativeApi.setClipMetadata(ref, {
-  ocrText: "hello world",
-  language: "en",
-});
+await globalNativeApi.setClipOcrText(clip.hash, "hello world");
 ```
 
-- Writes only into **your namespace's** sub-object.
-- Multiple scripts writing different namespaces don't conflict.
-- These fields are picked up by FTS (when enabled).
+- Content-addressed by `hash` — identical image bytes share one OCR record.
+- Pass an empty string to record a negative result (suppresses re-runs).
+- For ad-hoc per-script annotations on a clip, see `setClipMetadata` in the
+  generated [API reference](./api/@super-clipboard/namespaces/SuperClipboard/interfaces/GlobalNativeApi.md)
+  (deprecated — its `scriptData` bag is isolated per script identity and is
+  not picked up by host search; prefer dedicated APIs like `setClipOcrText`).
 
 ---
 

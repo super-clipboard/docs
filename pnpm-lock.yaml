@@ -12,8 +12,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2(typescript@6.0.3)
       '@super-clipboard/userscript-types':
-        specifier: ^0.4.1
-        version: 0.4.1(utools-api-types@7.5.1)
+        specifier: ^0.5.0
+        version: 0.5.0(utools-api-types@7.5.1)
       typedoc:
         specifier: ^0.28.19
         version: 0.28.19(typescript@6.0.3)
@@ -522,8 +522,8 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@super-clipboard/userscript-types@0.4.1':
-    resolution: {integrity: sha512-zwZgo8UUcRsryjvbto5gSzBo/ZGK8paKaI9dLoFbEK7DoAEem8ZxHPeFedp0hHCa6KTT/cPBvmP4a1Hbv8u8sg==}
+  '@super-clipboard/userscript-types@0.5.0':
+    resolution: {integrity: sha512-0VdtVTVmOOZl/BSWrujsaOxEths9cgIjrKDgmVxIDVGe/HBphvASZ2Wv+kc3K3JYgECUQbx6YHpV2D046AaGFA==}
     peerDependencies:
       utools-api-types: ^7.5.1
 
@@ -1608,7 +1608,7 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@super-clipboard/userscript-types@0.4.1(utools-api-types@7.5.1)':
+  '@super-clipboard/userscript-types@0.5.0(utools-api-types@7.5.1)':
     dependencies:
       utools-api-types: 7.5.1
 

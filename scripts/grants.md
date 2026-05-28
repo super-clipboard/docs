@@ -72,13 +72,13 @@ below), the host refuses to expose these. They return `undefined` /
 `BridgeError` is a plain `Error` with a `code` field:
 
 ```ts twoslash
-declare const ref: SuperClipboard.ClipRef;
+declare const clip: SuperClipboard.ClipRef & { hash: string };
 // ---cut---
 try {
-  await globalNativeApi.setClipMetadata(ref, { foo: 1 });
+  await globalNativeApi.setClipOcrText(clip.hash, "hello");
 } catch (e) {
   if (e instanceof Error && (e as any).code === "GRANT_DENIED") {
-    globalNativeApi.warn("Missing @grant globalNativeApi.setClipMetadata");
+    globalNativeApi.warn("Missing @grant globalNativeApi.setClipOcrText");
   }
 }
 ```
@@ -110,6 +110,6 @@ Before submitting to the [marketplace](./publishing):
 - **Cross-origin XHR** (Tampermonkey's `xmlhttpRequest`) — use `fetch`; CORS rules apply.
 - **Arbitrary file system access** — use `globalNativeApi.saveFile` (write)
   or `globalNativeApi.copyLocalFile` (copy from a chosen source path).
-- **Inter-script messaging** — use `setClipMetadata` to annotate a shared
-  clip, or per-namespace KV for your own settings.
+- **Inter-script messaging** — use a dedicated host API (e.g.
+  `setClipOcrText` for OCR), or per-namespace KV for your own settings.
 - **Touch the host DOM / cookies** — scripts run in an isolated iframe.

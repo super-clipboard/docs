@@ -61,11 +61,10 @@ to `globalNativeApi`.
 
 ## Can scripts share data across namespaces?
 
-KV is **strictly per-namespace**. Workarounds:
+KV is **strictly per-script-identity**. Workarounds:
 
-- `globalNativeApi.setClipMetadata` writes into the clip's
-  `scriptData[<namespace>]`. Other scripts reading the same clip can see
-  **only their own** namespace bucket — no cross-read.
+- Use a dedicated host API where one exists (e.g. `setClipOcrText` writes
+  to a shared `ocr/{hash}` store visible across all scripts).
 - The system clipboard as a signal channel (not recommended; pollutes
   history).
 
