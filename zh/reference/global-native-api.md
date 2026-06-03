@@ -42,12 +42,16 @@ const id = globalNativeApi.registerMenuCommand(
       utools.copyText(`<${body.text}>`);
     }
   },
-  { matchClip: ["text"] },
+  {
+    matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "text",
+  },
 );
 ```
 
 - 返回的 `id` 不在重启后保留；如需持久化命令，每次启动都重新注册。
-- `options.matchClip` 与元数据的 `@match-clip` 取交集。
+- `options.matcher` 是命令级同步过滤函数——在脚本级 `@match-clip` 命中后再跑一次。
+  必须为纯同步函数（不能使用 `async`/`await`/外部闭包变量），详见 `MenuMatcherContext`。
+- ~~`options.matchClip`~~ 已弃用——与 `@match-clip` 语义重复，请改用 `@match-clip` + `options.matcher`。
 - `options.accessKey`：单字符，作为菜单的快捷字母提示。
 
 ### `unregisterMenuCommand(id)`

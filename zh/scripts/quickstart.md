@@ -38,7 +38,9 @@ globalNativeApi.registerMenuCommand(
     utools.copyText(`[${new URL(url).hostname}](${url})`);
     await globalNativeApi.notification({ title: "已复制", body: url });
   },
-  { matchClip: ["text"] },
+  {
+    matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "text",
+  },
 );
 ```
 
@@ -70,8 +72,9 @@ bridge 也会以 `GRANT_DENIED` 拒绝。开发阶段可以先用 `@grant utools
 ### `@match-clip`
 
 限定菜单只在指定 clip 类型上展示（这里只显示在 `text` 上）。
-也可以在调用 `registerMenuCommand` 时通过 `options.matchClip` 二次收紧
-（取交集）。
+也可以在调用 `registerMenuCommand` 时通过 `options.matcher` 做命令级
+精筛（例如要求单选、或正则匹配正文）。~~`options.matchClip` 已弃用~~，
+与 `@match-clip` 语义重复。
 
 ### `ctx.clips`
 

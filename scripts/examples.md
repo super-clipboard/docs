@@ -28,7 +28,9 @@ globalNativeApi.registerMenuCommand(
       placement: "center",
     });
   },
-  { matchClip: ["text"] },
+  {
+    matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "text",
+  },
 );
 ```
 
@@ -59,7 +61,9 @@ globalNativeApi.registerMenuCommand(
       body: `${tokens.length} tokens`,
     });
   },
-  { matchClip: ["text"] },
+  {
+    matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "text",
+  },
 );
 ```
 
@@ -79,7 +83,9 @@ globalNativeApi.registerMenuCommand(
       mime: "image/png",
     });
   },
-  { matchClip: ["image"] },
+  {
+    matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "image",
+  },
 );
 ```
 

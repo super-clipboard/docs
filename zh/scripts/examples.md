@@ -173,7 +173,9 @@ globalNativeApi.registerMenuCommand("复制为 Markdown 链接", async (ctx) => 
   } catch {
     await globalNativeApi.notification("当前内容不是合法 URL");
   }
-}, { matchClip: ["text"] });
+}, {
+  matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "text",
+});
 ```
 
 要点：

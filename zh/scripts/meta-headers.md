@@ -78,22 +78,30 @@
 >
 > 其他域名会被拒绝，避免脚本任意拉取代码。
 
-## `@match-clip` 与 `options.matchClip`
+## `@match-clip` 与 `options.matcher`
 
-两层过滤会取交集：
+`@match-clip` 是脚本级类型粗筛（同步、零开销），对所有命令生效：
 
 ```text
 // @match-clip   text
 // @match-clip   image
 ```
 
+`options.matcher` 是命令级精筛——在 `@match-clip` 命中后再跑一次同步判断：
+
 ```ts
 globalNativeApi.registerMenuCommand("Decode QR", onDecode, {
-  matchClip: ["image"], // 仅在 image 上出现
+  matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "image",
 });
 ```
 
-最终命令只在 `image` 类型 clip 上可见。
+- matcher 必须是**纯同步函数**，不能使用 `async`/`await`、不能引用外部闭包变量。
+- `ctx.bodies` 仅包含 text/file 类型的同步缓存正文；image 字节不在其中（需异步读盘）。
+- 若 cache 未命中（冷启动早期），对应 hash 不在 `ctx.bodies` 中，matcher 应回退到仅 type 判断。
+
+### `options.matchClip`（已弃用）
+
+`options.matchClip` 与 `@match-clip` 表达相同语义，已弃用。请改用 `@match-clip`（脚本级） + `options.matcher`（命令级条件）。
 
 ## 完整示例
 

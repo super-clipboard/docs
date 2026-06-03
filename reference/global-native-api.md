@@ -43,12 +43,18 @@ const id = globalNativeApi.registerMenuCommand(
       utools.copyText(`<${body.text}>`);
     }
   },
-  { matchClip: ["text"] },
+  {
+    matcher: (ctx) => ctx.clips.length === 1 && ctx.clips[0].type === "text",
+  },
 );
 ```
 
 - The returned `id` does not persist across restarts — re-register on each launch.
-- `options.matchClip` intersects with the `@match-clip` header.
+- `options.matcher` is a command-level synchronous predicate — it runs after the
+  script-level `@match-clip` has already accepted the selection. Must be a pure
+  synchronous function (no `async`/`await`/closure variables). See `MenuMatcherContext`.
+- ~~`options.matchClip`~~ is deprecated — it duplicates `@match-clip`. Use
+  `@match-clip` (script-level) + `options.matcher` (command-level) instead.
 - `options.accessKey` — single character used as the menu's mnemonic.
 
 ### `unregisterMenuCommand(id)`
