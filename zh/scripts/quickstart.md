@@ -10,7 +10,7 @@
 
 ## 第 2 步 · 完整代码
 
-```ts twoslash
+```ts
 // ==UserScript==
 // @name         复制为 Markdown 链接
 // @namespace    com.example.copy-as-md-link
@@ -31,7 +31,6 @@ globalNativeApi.registerMenuCommand(
     if (!target || target.type !== "text") return;
 
     const body = await globalNativeApi.getClipBody(target);
-    //    ^?
     if (body?.type !== "text" || !body.text) return;
 
     const url = body.text.trim();
@@ -44,8 +43,7 @@ globalNativeApi.registerMenuCommand(
 );
 ```
 
-把鼠标悬停在 `body` 标识上 —— TwoSlash 会显示完整类型（来自
-[`spec.d.ts`](https://github.com/super-clipboard/userscript-types/blob/main/spec.d.ts)）。
+`body` 的类型来自 [`spec.d.ts`](https://github.com/super-clipboard/userscript-types/blob/main/spec.d.ts)。
 
 ## 第 3 步 · 试运行
 
@@ -78,13 +76,11 @@ bridge 也会以 `GRANT_DENIED` 拒绝。开发阶段可以先用 `@grant utools
 
 ### `ctx.clips`
 
-```ts twoslash
+```ts
 declare const ctx: SuperClipboard.MenuCallbackContext;
 // ---cut---
 ctx.clips;
-// ^?
 ctx.trigger;
-// ^?
 ```
 
 `clips` 始终是数组（多选场景下长度 > 1）；`trigger` 是用户实际右键的那一条，

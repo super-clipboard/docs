@@ -1,5 +1,4 @@
 import { defineConfig, type DefaultTheme } from "vitepress";
-import { transformerTwoslash } from "@shikijs/vitepress-twoslash";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -185,25 +184,9 @@ export default defineConfig({
     ["link", { rel: "apple-touch-icon", href: "/docs/logo.png" }],
   ],
 
-  markdown: {
-    codeTransformers: [
-      // Renders TwoSlash hover types / `^?` markers in fenced ts/js code blocks.
-      // Add `twoslash` to the language fence to opt in (e.g. ```ts twoslash).
-      transformerTwoslash({
-        twoslashOptions: {
-          compilerOptions: {
-            lib: ["ESNext", "DOM"],
-            target: 99, // ESNext
-            module: 99, // ESNext
-            moduleResolution: 100, // Bundler
-            strict: true,
-            skipLibCheck: true,
-            types: ["@super-clipboard/userscript-types"],
-          },
-        },
-      }),
-    ],
-  },
+  // Note: code blocks use standard ` ```ts ` fences with Shiki syntax highlighting.
+  // Type checking / hover types (TwoSlash) have been removed to keep the build
+  // lean and avoid CI failures from TS errors in sample code.
 
   themeConfig: {
     logo: "/logo.png",

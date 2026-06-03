@@ -2,7 +2,7 @@
 
 A real, useful script in ~30 lines: **"Copy as Markdown link"** — adds a menu
 command on text clips that wraps the text as `<url>` if it's a URL, otherwise
-prompts you. Hover the symbols below for full types.
+prompts you.
 
 ## 1. Scaffolding
 
@@ -15,7 +15,7 @@ echo '/// <reference types="@super-clipboard/userscript-types" />' > my-script.u
 
 ## 2. The script
 
-```ts twoslash
+```ts
 // ==UserScript==
 // @name         Copy as Markdown link
 // @namespace    com.example.md-link
@@ -31,7 +31,6 @@ echo '/// <reference types="@super-clipboard/userscript-types" />' > my-script.u
 globalNativeApi.registerMenuCommand(
   "Copy as Markdown link",
   async (ctx) => {
-    //    ^?
     const ref = ctx.clips[0];
     if (!ref || ref.type !== "text") return;
 

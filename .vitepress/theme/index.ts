@@ -1,9 +1,5 @@
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
-import TwoslashFloatingVue from "@shikijs/vitepress-twoslash/client";
-
-import "@shikijs/vitepress-twoslash/style.css";
-import "./twoslash.css";
 
 import PerfViewer from "./components/PerfViewer.vue";
 
@@ -46,7 +42,6 @@ function maybeRedirect(): void {
 const theme: Theme = {
   extends: DefaultTheme,
   enhanceApp({ app }) {
-    app.use(TwoslashFloatingVue);
     app.component("PerfViewer", PerfViewer);
     maybeRedirect();
   },

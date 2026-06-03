@@ -1,13 +1,12 @@
 # Examples
 
-Five copy-paste-friendly patterns. All use Twoslash — hover any symbol for types.
+Five copy-paste-friendly patterns.
 
 ## 1. QR code in a panel
 
 Generate a QR for the focused text clip and show it in a centered panel.
 
-```ts twoslash
-// @noErrors
+```ts
 // @require   https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js#sha256-…
 declare const QRCode: { toDataURL(text: string): Promise<string> };
 // ---cut---
@@ -36,7 +35,7 @@ globalNativeApi.registerMenuCommand(
 
 ## 2. Tokenize Chinese / English text
 
-```ts twoslash
+```ts
 function tokenize(text: string): string[] {
   // naive: split on whitespace + per-CJK-character
   const out: string[] = [];
@@ -69,7 +68,7 @@ globalNativeApi.registerMenuCommand(
 
 ## 3. Save image clip to disk
 
-```ts twoslash
+```ts
 globalNativeApi.registerMenuCommand(
   "Save as PNG",
   async (ctx) => {
@@ -94,12 +93,11 @@ globalNativeApi.registerMenuCommand(
 `@run-at background` lets the script run as soon as the plugin starts.
 Here we listen for new image clips and write back recognised text.
 
-```ts twoslash
+```ts
 // ==UserScript==
 // @run-at  background
 // ==/UserScript==
 
-// @noErrors
 declare function callOcr(bytes: Uint8Array): Promise<string>;
 // ---cut---
 globalNativeApi.addClipboardListener("image", async (e) => {
@@ -114,8 +112,8 @@ globalNativeApi.addClipboardListener("image", async (e) => {
 
 ## 5. Read script info for logging
 
-```ts twoslash
+```ts
 const { name, version, scriptId } = globalNativeApi.info;
-//        ^?
+
 console.log(`[${name} v${version}] booted`, scriptId);
 ```

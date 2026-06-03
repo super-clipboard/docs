@@ -1,14 +1,12 @@
 # 示例集
 
 > 以下示例展示常见脚本场景与 API 的典型组合。
-> 鼠标悬停代码中的符号可查看完整类型。
 
 ## 1. 二维码生成（`@require` + `showPanel`）
 
 利用 `@require` 拉取外部 UMD 库，把当前文本剪贴板生成 SVG 二维码并在浮窗展示。
 
-```ts twoslash
-// @noErrors
+```ts
 declare const QRCodeEncoder: {
   encode(text: string, opts?: { errorCorrection?: "L" | "M" | "Q" | "H" }): unknown;
   toSVG(modules: unknown): string;
@@ -42,8 +40,7 @@ globalNativeApi.registerMenuCommand("生成二维码", async (ctx) => {
 
 ## 2. 智慧分词（`@require` + DOM 交互 + `utools.copyText`）
 
-```ts twoslash
-// @noErrors
+```ts
 declare const Segmentit: {
   Segment: new () => unknown;
   useDefault: (s: unknown) => { doSegment(text: string, opt?: { simple?: boolean }): string[] };
@@ -85,7 +82,7 @@ globalNativeApi.registerMenuCommand("智慧分词", async (ctx) => {
 
 ## 3. 另存为（`getClipBody` + `saveFile`）
 
-```ts twoslash
+```ts
 // @grant globalNativeApi.registerMenuCommand
 // @grant globalNativeApi.getClipBody
 // @grant globalNativeApi.saveFile
@@ -121,8 +118,7 @@ globalNativeApi.registerMenuCommand("另存为...", async (ctx) => {
 
 ## 4. 后台 OCR 标注（`addClipboardListener` + `setClipMetadata`）
 
-```ts twoslash
-// @noErrors
+```ts
 // @grant globalNativeApi.addClipboardListener
 // @grant globalNativeApi.getClipBody
 // @grant globalNativeApi.setClipMetadata
@@ -151,7 +147,7 @@ declare function runOcr(bytes: Uint8Array): Promise<string>;
 
 ## 5. 复制为 Markdown 链接（带 `info` 自标识）
 
-```ts twoslash
+```ts
 // @grant globalNativeApi.registerMenuCommand
 // @grant globalNativeApi.getClipBody
 // @grant globalNativeApi.notification

@@ -71,7 +71,7 @@ bridge 在每次调用时检查：**该 `namespace.method` 是否在你的 `@gra
 
 `BridgeError` 是带 `code` 字段的普通 `Error`：
 
-```ts twoslash
+```ts
 declare const ref: SuperClipboard.ClipRef;
 // ---cut---
 try {

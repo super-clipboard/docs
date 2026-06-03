@@ -3,7 +3,7 @@
 VitePress site for the Super Clipboard userscript runtime. Two flavours of
 reference live here:
 
-- **Narrative** (`reference/global-native-api.md`, `zh/reference/global-native-api.md`) — curated, by-category, with TwoSlash demos.
+- **Narrative** (`reference/global-native-api.md`, `zh/reference/global-native-api.md`) — curated, by-category, with TypeScript code examples.
 - **Auto-generated** (`reference/api/`, mirrored at `zh/reference/api/`) — produced by [TypeDoc](https://typedoc.org/) from `@super-clipboard/userscript-types`'s `spec.d.ts`.
 
 ## Scripts
@@ -23,7 +23,7 @@ pnpm docs:api        # regenerates ./reference/api + mirrors to ./zh/reference/a
    ```bash
    pnpm add -D @super-clipboard/userscript-types@latest
    ```
-4. `pnpm dev` — TwoSlash + TypeDoc will pick up the new types automatically.
+4. `pnpm dev` — TypeDoc will pick up the new types automatically.
 
 ### Local dev against unpublished types
 

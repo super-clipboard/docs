@@ -2,12 +2,10 @@
 
 > Full signatures live in [`spec.d.ts`](https://github.com/super-clipboard/userscript-types/blob/main/spec.d.ts)
 > under `SuperClipboard.GlobalNativeApi`. This page lists every method by
-> category. Code blocks use [TwoSlash](https://twoslash.netlify.app/) — hover
-> a symbol to see its inferred type.
+> category. Code blocks use standard TypeScript syntax highlighting.
 
-```ts twoslash
+```ts
 globalNativeApi.info;
-//              ^?
 ```
 
 ## At a glance
@@ -31,11 +29,10 @@ globalNativeApi.info;
 
 Register a context-menu entry on clip rows.
 
-```ts twoslash
+```ts
 const id = globalNativeApi.registerMenuCommand(
   "Copy as link",
   async (ctx) => {
-    //    ^?
     const target = ctx.clips[0];
     if (target?.type !== "text") return;
     const body = await globalNativeApi.getClipBody(target);
@@ -59,7 +56,7 @@ const id = globalNativeApi.registerMenuCommand(
 
 ### `unregisterMenuCommand(id)`
 
-```ts twoslash
+```ts
 declare const id: string;
 // ---cut---
 globalNativeApi.unregisterMenuCommand(id);
@@ -73,9 +70,8 @@ Unknown ids are no-ops, never throw.
 
 ### `addClipboardListener(event, handler)` / `removeClipboardListener`
 
-```ts twoslash
+```ts
 const onAdded = (e: SuperClipboard.ClipboardAddedEvent) => {
-  //                ^?
   console.log("captured", e.type, e.hash);
 };
 
@@ -89,7 +85,7 @@ specific type is more precise than filtering inside an `"added"` handler.
 
 ### `addAppListener(event, handler)`
 
-```ts twoslash
+```ts
 globalNativeApi.addAppListener("visible", () => {
   // Fired when the main window becomes visible (placeholder for now).
 });
@@ -100,7 +96,7 @@ globalNativeApi.addAppListener("visible", () => {
 
 ### `addPanelListener(event, handler)`
 
-```ts twoslash
+```ts
 globalNativeApi.addPanelListener("closed", () => {
   // Fired when the panel is closed by the user or via closePanel().
 });
@@ -116,12 +112,11 @@ globalNativeApi.addPanelListener("closed", () => {
 
 Read a clip's body. Branch on `body.type` (tagged union):
 
-```ts twoslash
+```ts
 declare const ref: SuperClipboard.ClipRef;
 // ---cut---
 async function demo() {
   const body = await globalNativeApi.getClipBody(ref);
-  //    ^?
   if (!body) return;
   switch (body.type) {
     case "text":
@@ -145,7 +140,7 @@ Persist OCR text for an image clip. Writes to the host-owned `ocr/{hash}`
 document — the same store consumed by the built-in image text search, so
 the result is visible across all scripts and survives uninstall.
 
-```ts twoslash
+```ts
 declare const clip: SuperClipboard.ClipRef & { hash: string };
 // ---cut---
 await globalNativeApi.setClipOcrText(clip.hash, "hello world");
@@ -165,14 +160,12 @@ await globalNativeApi.setClipOcrText(clip.hash, "hello world");
 Per-script-identity key-value store (isolated by the install-source URL hash,
 not by `@namespace`).
 
-```ts twoslash
+```ts
 await globalNativeApi.setValue("settings", { autoOpen: true });
 const s = await globalNativeApi.getValue<{ autoOpen: boolean }>("settings");
-//    ^?
 
 await globalNativeApi.deleteValue("settings");
 const keys = await globalNativeApi.listValues();
-//    ^?
 ```
 
 - Values are `JSON.stringify`'d — don't store `Map` / `Set` / functions.
@@ -187,7 +180,7 @@ const keys = await globalNativeApi.listValues();
 
 ### `notification(options | string)`
 
-```ts twoslash
+```ts
 await globalNativeApi.notification({
   title: "Done",
   body: "Saved to ~/Downloads/clip.png",
@@ -200,7 +193,7 @@ await globalNativeApi.notification("Saved");
 
 ### `saveFile(content, options)`
 
-```ts twoslash
+```ts
 declare const ref: SuperClipboard.ClipRef;
 // ---cut---
 const body = await globalNativeApi.getClipBody(ref);
@@ -221,7 +214,7 @@ if (body?.type === "image" && body.bytes) {
 
 ### `copyLocalFile(srcPath, destPath)`
 
-```ts twoslash
+```ts
 await globalNativeApi.copyLocalFile(
   "/Users/me/Downloads/source.png",
   "/Users/me/Pictures/dest.png",
@@ -243,7 +236,7 @@ await globalNativeApi.copyLocalFile(
 > (`utools.getPath('logs')/super-clipboard-next/...`) 并在设置 → 脚本 → 调试日志面板实时显示。
 > 以下 API 仍可用但在 spec 中已 `@deprecated`，后续版本会移除。
 
-```ts twoslash
+```ts
 console.log("ordinary", { hash: "abc" });
 console.warn("unexpected condition");
 console.error(new Error("boom"));
@@ -262,7 +255,7 @@ and visibility — the DOM is not rebuilt, so state survives close/show.
 
 ### `showPanel(options)`
 
-```ts twoslash
+```ts
 await globalNativeApi.showPanel({
   width: 360,
   height: "auto",
@@ -277,7 +270,7 @@ await globalNativeApi.showPanel({
 
 ### `resizePanel(size)`
 
-```ts twoslash
+```ts
 await globalNativeApi.resizePanel({ width: 480, height: "auto" });
 ```
 
@@ -285,7 +278,7 @@ Pass only the dimensions you want to change. No-op if the panel is closed.
 
 ### `closePanel()`
 
-```ts twoslash
+```ts
 await globalNativeApi.closePanel();
 ```
 
@@ -297,9 +290,8 @@ Hides the panel **without** unmounting the iframe.
 
 ### `info`
 
-```ts twoslash
+```ts
 const info = globalNativeApi.info;
-//    ^?
 
 console.log(`[${info.name} v${info.version}] grants:`, info.grants);
 ```

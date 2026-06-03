@@ -73,7 +73,7 @@ below), the host refuses to expose these. They return `undefined` /
 
 `BridgeError` is a plain `Error` with a `code` field:
 
-```ts twoslash
+```ts
 declare const clip: SuperClipboard.ClipRef & { hash: string };
 // ---cut---
 try {

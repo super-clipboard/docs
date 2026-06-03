@@ -2,11 +2,10 @@
 
 > 完整签名见类型包 [`spec.d.ts`](https://github.com/super-clipboard/userscript-types/blob/main/spec.d.ts)
 > 中的 `SuperClipboard.GlobalNativeApi`。本页按分类列出所有方法，
-> 代码块使用 [TwoSlash](https://twoslash.netlify.app/) —— 把鼠标停在符号上可看完整类型。
+> 代码块使用标准 TypeScript 语法高亮。
 
-```ts twoslash
+```ts
 globalNativeApi.info;
-//              ^?
 ```
 
 ## 分类速查
@@ -30,11 +29,10 @@ globalNativeApi.info;
 
 注册一条出现在剪贴项右键菜单中的命令。
 
-```ts twoslash
+```ts
 const id = globalNativeApi.registerMenuCommand(
   "复制为链接",
   async (ctx) => {
-    //    ^?
     const target = ctx.clips[0];
     if (target?.type !== "text") return;
     const body = await globalNativeApi.getClipBody(target);
@@ -56,7 +54,7 @@ const id = globalNativeApi.registerMenuCommand(
 
 ### `unregisterMenuCommand(id)`
 
-```ts twoslash
+```ts
 declare const id: string;
 // ---cut---
 globalNativeApi.unregisterMenuCommand(id);
@@ -70,9 +68,8 @@ globalNativeApi.unregisterMenuCommand(id);
 
 ### `addClipboardListener(event, handler)` / `removeClipboardListener`
 
-```ts twoslash
+```ts
 const onAdded = (e: SuperClipboard.ClipboardAddedEvent) => {
-  //                ^?
   console.log("captured", e.type, e.hash);
 };
 
@@ -86,7 +83,7 @@ globalNativeApi.removeClipboardListener("added", onAdded);
 
 ### `addAppListener(event, handler)`
 
-```ts twoslash
+```ts
 globalNativeApi.addAppListener("visible", () => {
   // 主窗口每次变可见时触发（当前为占位，等待宿主实装）
 });
@@ -97,7 +94,7 @@ globalNativeApi.addAppListener("visible", () => {
 
 ### `addPanelListener(event, handler)`
 
-```ts twoslash
+```ts
 globalNativeApi.addPanelListener("closed", () => {
   // 面板被用户或 closePanel() 关闭时触发（同样是占位）
 });
@@ -113,12 +110,11 @@ globalNativeApi.addPanelListener("closed", () => {
 
 读取一条 clip 的正文，按 `body.type` 走标签联合分支：
 
-```ts twoslash
+```ts
 declare const ref: SuperClipboard.ClipRef;
 // ---cut---
 async function demo() {
   const body = await globalNativeApi.getClipBody(ref);
-  //    ^?
   if (!body) return;
   switch (body.type) {
     case "text":
@@ -142,7 +138,7 @@ async function demo() {
 维护的全局共享存储，所有脚本以及内置的图片文本搜索都会读取它，
 并且不会随脚本卸载而丢失。
 
-```ts twoslash
+```ts
 declare const clip: SuperClipboard.ClipRef & { hash: string };
 // ---cut---
 await globalNativeApi.setClipOcrText(clip.hash, "hello world");
@@ -159,14 +155,12 @@ await globalNativeApi.setClipOcrText(clip.hash, "hello world");
 
 按**脚本身份**（安装来源 URL 派生）隔离的简单键值存储。
 
-```ts twoslash
+```ts
 await globalNativeApi.setValue("settings", { autoOpen: true });
 const s = await globalNativeApi.getValue<{ autoOpen: boolean }>("settings");
-//    ^?
 
 await globalNativeApi.deleteValue("settings");
 const keys = await globalNativeApi.listValues();
-//    ^?
 ```
 
 - 值经 `JSON.stringify` 序列化；不要存 `Map` / `Set` / 函数。
@@ -179,7 +173,7 @@ const keys = await globalNativeApi.listValues();
 
 ### `notification(options | string)`
 
-```ts twoslash
+```ts
 await globalNativeApi.notification({
   title: "完成",
   body: "已保存到 ~/Downloads/clip.png",
@@ -192,7 +186,7 @@ await globalNativeApi.notification("已保存");
 
 ### `saveFile(content, options)`
 
-```ts twoslash
+```ts
 declare const ref: SuperClipboard.ClipRef;
 // ---cut---
 const body = await globalNativeApi.getClipBody(ref);
@@ -211,7 +205,7 @@ if (body?.type === "image" && body.bytes) {
 
 ### `copyLocalFile(srcPath, destPath)`
 
-```ts twoslash
+```ts
 await globalNativeApi.copyLocalFile(
   "/Users/me/Downloads/source.png",
   "/Users/me/Pictures/dest.png",
@@ -232,7 +226,7 @@ await globalNativeApi.copyLocalFile(
 > (`utools.getPath('logs')/super-clipboard-next/...`) 并在设置 → 脚本 → 调试日志面板实时显示。
 > 以下 API 仍可用但在 spec 中已 `@deprecated`，后续版本会移除。
 
-```ts twoslash
+```ts
 console.log("ordinary", { hash: "abc" });
 console.warn("unexpected condition");
 console.error(new Error("boom"));
@@ -251,7 +245,7 @@ console.error(new Error("boom"));
 
 ### `showPanel(options)`
 
-```ts twoslash
+```ts
 await globalNativeApi.showPanel({
   width: 360,
   height: "auto",
@@ -266,7 +260,7 @@ await globalNativeApi.showPanel({
 
 ### `resizePanel(size)`
 
-```ts twoslash
+```ts
 await globalNativeApi.resizePanel({ width: 480, height: "auto" });
 ```
 
@@ -274,7 +268,7 @@ await globalNativeApi.resizePanel({ width: 480, height: "auto" });
 
 ### `closePanel()`
 
-```ts twoslash
+```ts
 await globalNativeApi.closePanel();
 ```
 
@@ -286,9 +280,8 @@ await globalNativeApi.closePanel();
 
 ### `info`
 
-```ts twoslash
+```ts
 const info = globalNativeApi.info;
-//    ^?
 
 console.log(`[${info.name} v${info.version}] grants:`, info.grants);
 ```
