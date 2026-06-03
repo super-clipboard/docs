@@ -6,3 +6,6 @@ onlyBuiltDependencies:
 # so freshly published releases can be consumed by CI immediately.
 minimumReleaseAgeExclude:
   - '@super-clipboard/*'
+
+allowBuilds:
+  esbuild: true
