@@ -21,9 +21,8 @@ super-clipboard/userscripts/
 scripts/json-format/json-format.user.js
 ```
 
-> 早期版本要求 `<kebab-case-id>` 与 `@namespace` 末段一致；v0.5 之后
-> `@namespace` 不再参与脚本身份，此约束已取消。`@namespace` 是否存在、写
-> 什么都不影响发布——脚本身份完全由这条 npmmirror 下载链接派生。
+> `@namespace` 现在是可选的，不影响脚本身份。
+> v0.5 起身份完全由 npmmirror 下载链接派生。
 
 ## 提交流程
 

@@ -171,8 +171,9 @@ const keys = await globalNativeApi.listValues();
 
 - Values are `JSON.stringify`'d — don't store `Map` / `Set` / functions.
 - `getValue<T>` returns `undefined` if the key is missing.
-- Different scripts (different install URLs) cannot read each other's keys;
-  matching `@namespace` values do not bridge the isolation.
+- Different scripts (different install URLs) cannot read each other's keys.
+  `@namespace` values do not bridge the isolation (isolation is purely by
+  install-source URL hash since v0.5).
 
 ---
 

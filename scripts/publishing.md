@@ -21,10 +21,9 @@ super-clipboard/userscripts/
 scripts/json-format/json-format.user.js
 ```
 
-> Older docs required `<kebab-case-id>` to match the tail of `@namespace`.
-> From v0.5 onward `@namespace` no longer participates in script identity
-> and this constraint is dropped — script identity comes purely from the
-> published npmmirror download URL.
+> `@namespace` is optional and does not affect script identity.
+> From v0.5 onward identity is derived purely from the published
+> npmmirror download URL.
 
 ## Submission flow
 
