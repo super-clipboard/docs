@@ -13,11 +13,10 @@ globalNativeApi.info;
 | 分类 | 同步 / 异步 | 方法 |
 |------|-----------|------|
 | [菜单](#菜单) | 同步 | `registerMenuCommand` `unregisterMenuCommand` |
-| [事件订阅](#事件订阅) | 同步 | `addClipboardListener` `removeClipboardListener` `addAppListener` `addPanelListener` |
+| [事件订阅](#事件订阅) | 同步 | `addClipboardListener` `removeClipboardListener` |
 | [数据读写](#数据读写) | 异步 | `getClipBody` `setClipMetadata` |
 | [KV 存储](#kv-存储) | 异步 | `setValue` `getValue` `deleteValue` `listValues` |
-| [输出 / IO](#输出-io) | 异步 | `notification` `saveFile` `copyLocalFile` |
-| [日志](#日志) | 同步 | `log` `warn` `error` |
+| [输出 / IO](#输出-io) | 异步 | `toast` `saveFile` `copyLocalFile` |
 | [面板](#面板) | 异步 | `showPanel` `resizePanel` `closePanel` |
 | [元信息](#元信息) | 同步 | `info` |
 
@@ -49,8 +48,8 @@ const id = globalNativeApi.registerMenuCommand(
 - 返回的 `id` 不在重启后保留；如需持久化命令，每次启动都重新注册。
 - `options.matcher` 是命令级同步过滤函数——在脚本级 `@match-clip` 命中后再跑一次。
   必须为纯同步函数（不能使用 `async`/`await`/外部闭包变量），详见 `MenuMatcherContext`。
-- ~~`options.matchClip`~~ 已弃用——与 `@match-clip` 语义重复，请改用 `@match-clip` + `options.matcher`。
-- `options.accessKey`：单字符，作为菜单的快捷字母提示。
+- ~~`options.matchClip`~~ 已弃用并已移除——与 `@match-clip` 语义重复，
+  请改用 `@match-clip` + `options.matcher`。
 
 ### `unregisterMenuCommand(id)`
 
@@ -80,27 +79,6 @@ globalNativeApi.removeClipboardListener("added", onAdded);
 
 四个 channel：`"added"`（任意类型）、`"text"`、`"image"`、`"file"`。
 订阅特定类型比在 handler 内过滤更精确。
-
-### `addAppListener(event, handler)`
-
-```ts
-globalNativeApi.addAppListener("visible", () => {
-  // 主窗口每次变可见时触发（当前为占位，等待宿主实装）
-});
-```
-
-> ⚠️ **占位 API**：当前宿主未实际 emit 任何 `app:*` 事件，
-> 订阅是 no-op。后续版本会逐步落实。
-
-### `addPanelListener(event, handler)`
-
-```ts
-globalNativeApi.addPanelListener("closed", () => {
-  // 面板被用户或 closePanel() 关闭时触发（同样是占位）
-});
-```
-
-> ⚠️ **占位 API**：同上。
 
 ---
 
@@ -171,17 +149,20 @@ const keys = await globalNativeApi.listValues();
 
 ## 输出 / IO
 
-### `notification(options | string)`
+### `toast(options | string)`
+
+显示应用内提示，由宿主内置 toast UI 渲染。
+**不是** Web `Notification` 或 OS 系统通知。
 
 ```ts
-await globalNativeApi.notification({
+await globalNativeApi.toast({
   title: "完成",
   body: "已保存到 ~/Downloads/clip.png",
   timeoutMs: 4000,
 });
 
 // 字符串简写，等价于 { body: "..." }
-await globalNativeApi.notification("已保存");
+await globalNativeApi.toast("已保存");
 ```
 
 ### `saveFile(content, options)`
@@ -215,26 +196,6 @@ await globalNativeApi.copyLocalFile(
 - 在支持的 Node 环境下把本地文件或目录复制到另一个路径。
 - 传入目录时会递归复制。
 - 常用于文件类 clip、脚本面板里选定的任意路径。
-
----
-
-## 日志
-
-> ⚠️ **Deprecated**：请改用 `console.log` / `console.warn` / `console.error`。
-> 宿主会拦截沙箱内的 `console.*` 调用，自动加上
-> `[script:<name>] [console]` 前缀写入应用主日志文件
-> (`utools.getPath('logs')/super-clipboard-next/...`) 并在设置 → 脚本 → 调试日志面板实时显示。
-> 以下 API 仍可用但在 spec 中已 `@deprecated`，后续版本会移除。
-
-```ts
-console.log("ordinary", { hash: "abc" });
-console.warn("unexpected condition");
-console.error(new Error("boom"));
-```
-
-- 同步调用。
-- 输出自动带 `[script:<name>]` 前缀，便于在 uTools 日志里检索。
-- 抛 `Error` 给 bridge 也会被宿主记在 `error` 级，但显式 `console.error` 更清晰。
 
 ---
 

@@ -13,11 +13,10 @@ globalNativeApi.info;
 | Category | Sync / async | Methods |
 |----------|--------------|---------|
 | [Menu](#menu) | sync | `registerMenuCommand` `unregisterMenuCommand` |
-| [Subscriptions](#subscriptions) | sync | `addClipboardListener` `removeClipboardListener` `addAppListener` `addPanelListener` |
+| [Subscriptions](#subscriptions) | sync | `addClipboardListener` `removeClipboardListener` |
 | [Data](#data) | async | `getClipBody` `setClipOcrText` |
 | [KV](#kv) | async | `setValue` `getValue` `deleteValue` `listValues` |
-| [I/O](#io) | async | `notification` `saveFile` `copyLocalFile` |
-| [Logging](#logging) | sync | `log` `warn` `error` |
+| [I/O](#io) | async | `toast` `saveFile` `copyLocalFile` |
 | [Panel](#panel) | async | `showPanel` `resizePanel` `closePanel` |
 | [Meta](#meta) | sync | `info` |
 
@@ -50,9 +49,9 @@ const id = globalNativeApi.registerMenuCommand(
 - `options.matcher` is a command-level synchronous predicate — it runs after the
   script-level `@match-clip` has already accepted the selection. Must be a pure
   synchronous function (no `async`/`await`/closure variables). See `MenuMatcherContext`.
-- ~~`options.matchClip`~~ is deprecated — it duplicates `@match-clip`. Use
-  `@match-clip` (script-level) + `options.matcher` (command-level) instead.
-- `options.accessKey` — single character used as the menu's mnemonic.
+- ~~`options.matchClip`~~ is deprecated and has been removed — it duplicated
+  `@match-clip`. Use `@match-clip` (script-level) + `options.matcher`
+  (command-level) instead.
 
 ### `unregisterMenuCommand(id)`
 
@@ -82,27 +81,6 @@ globalNativeApi.removeClipboardListener("added", onAdded);
 
 Channels: `"added"` (any type), `"text"`, `"image"`, `"file"`. Subscribing to a
 specific type is more precise than filtering inside an `"added"` handler.
-
-### `addAppListener(event, handler)`
-
-```ts
-globalNativeApi.addAppListener("visible", () => {
-  // Fired when the main window becomes visible (placeholder for now).
-});
-```
-
-> ⚠️ **Placeholder API**: the host does not currently emit any `app:*` events.
-> Subscriptions are no-ops. Will be implemented in upcoming releases.
-
-### `addPanelListener(event, handler)`
-
-```ts
-globalNativeApi.addPanelListener("closed", () => {
-  // Fired when the panel is closed by the user or via closePanel().
-});
-```
-
-> ⚠️ **Placeholder API**: same as above.
 
 ---
 
@@ -178,17 +156,20 @@ const keys = await globalNativeApi.listValues();
 
 ## I/O
 
-### `notification(options | string)`
+### `toast(options | string)`
+
+Show an in-app toast message rendered by the host's built-in toast UI.
+This is **not** a Web `Notification` or OS-level notification.
 
 ```ts
-await globalNativeApi.notification({
+await globalNativeApi.toast({
   title: "Done",
   body: "Saved to ~/Downloads/clip.png",
   timeoutMs: 4000,
 });
 
 // Shorthand: a string is treated as { body: "..." }
-await globalNativeApi.notification("Saved");
+await globalNativeApi.toast("Saved");
 ```
 
 ### `saveFile(content, options)`
@@ -225,26 +206,6 @@ await globalNativeApi.copyLocalFile(
   environments. Directories are copied recursively.
 - Useful when handling `file`-type clips, or when the user picks a source
   path from the script's own panel.
-
----
-
-## Logging
-
-> ⚠️ **Deprecated**：请改用 `console.log` / `console.warn` / `console.error`。
-> 宿主会拦截沙箱内的 `console.*` 调用，自动加上
-> `[script:<name>] [console]` 前缀写入应用主日志文件
-> (`utools.getPath('logs')/super-clipboard-next/...`) 并在设置 → 脚本 → 调试日志面板实时显示。
-> 以下 API 仍可用但在 spec 中已 `@deprecated`，后续版本会移除。
-
-```ts
-console.log("ordinary", { hash: "abc" });
-console.warn("unexpected condition");
-console.error(new Error("boom"));
-```
-
-- 同步调用。
-- 输出自动带上 `[script:<name>]` 前缀，便于在 uTools 日志文件中 grep。
-- 主动抛出的错误也会被宿主记在 `error` 级，但显式 `console.error` 更清晰。
 
 ---
 
