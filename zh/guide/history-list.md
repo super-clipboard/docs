@@ -4,7 +4,7 @@
 
 ## 列表布局
 
-![image-placeholder]()
+![main](/main.webp)
 
 - **左列时间** —— 相对时间（5 分钟前 / 昨天 / 2 月 14 日）。
 - **中列内容** —— 文本预览 / 图片缩略图 / 文件名。
@@ -16,7 +16,7 @@
 
 - 按 <kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd> 顺序切换。
 - 按 <kbd>←</kbd> <kbd>→</kbd> 同样切换；按 <kbd>Ctrl/Cmd</kbd> + <kbd>←</kbd> / <kbd>→</kbd> 跳到首/尾 Tab。
-- 拖拽顺序、隐藏不用的 Tab 见 [设置 → 分类布局](./settings#分类布局)。
+- 拖拽顺序、隐藏不用的 Tab 见分类布局设置。
 
 ## 搜索
 

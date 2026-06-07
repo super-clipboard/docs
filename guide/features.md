@@ -13,7 +13,7 @@ A one-page tour. Each feature has its own dedicated page if you want details.
 
 - **History list** — scroll-loaded virtual list grouped by date.
 - **Tabs** — quick filters: All / Text / Image / File / Pinned / Starred / per-Tag.
-- **Search** — full-text search over text content; for images, optional OCR backfill (see [Settings](./settings)).
+- **Search** — full-text search over text content; for images, optional OCR backfill.
 - **Multi-select** — <kbd>Cmd/Ctrl</kbd>-click or <kbd>Shift</kbd>-click to select ranges.
 
 → [History list](./history-list)
@@ -54,7 +54,7 @@ Three orthogonal axes:
 ## Customisation
 
 - Comprehensive shortcut help inside the plugin (top-right help button).
-- Granular [settings](./settings) — DB / listener / search / behaviour / preferences / category layout / logs / scripts.
+- Granular in-app settings — DB / listener / search / behaviour / preferences / category layout / logs / scripts.
 
 ## Storage & sync
 

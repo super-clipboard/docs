@@ -4,7 +4,7 @@ The home page of the plugin.
 
 ## Layout
 
-![image-placeholder]()
+![main](/main.webp)
 
 - **Top toolbar** — search box + tab filters.
 - **Main column** — virtualised list of clip rows grouped by *Today / Yesterday / earlier*.

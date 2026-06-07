@@ -49,5 +49,4 @@ Only if newly copied content is not being recorded should you check below:
 ## 6. Where next
 
 - [Feature overview](./features)
-- [Settings](./settings)
 - Want to write a script? Jump to [Scripts overview](/scripts/overview).

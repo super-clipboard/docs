@@ -51,12 +51,6 @@ const enSidebar: DefaultTheme.Sidebar = {
       ],
     },
     {
-      text: "Customisation",
-      items: [
-        { text: "Settings", link: "/guide/settings" },
-      ],
-    },
-    {
       text: "Debug",
       items: [
         { text: "Perf Viewer", link: "/guide/perf-viewer" },
@@ -122,12 +116,6 @@ const zhSidebar: DefaultTheme.Sidebar = {
         { text: "置顶、收藏与标签", link: "/zh/guide/pinned-and-tags" },
         { text: "预览与段落点选复制", link: "/zh/guide/preview-and-paragraph-copy" },
         { text: "链接快速打开", link: "/zh/guide/link-quick-open" },
-      ],
-    },
-    {
-      text: "个性化",
-      items: [
-        { text: "设置项", link: "/zh/guide/settings" },
       ],
     },
     {
