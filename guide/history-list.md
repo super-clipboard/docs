@@ -30,9 +30,11 @@ Tabs are configurable in **Settings → Category layout** — reorder, hide, or 
 
 Search state is cleared 5 seconds after the plugin hides (configurable in Settings).
 
-### Advanced Search Syntax (Lucene Subset)
+### Advanced Search Syntax (Lucene Subset) {#advanced-search-syntax}
 
 Super Clipboard supports Lucene-style query syntax with field filters, boolean operators, and time ranges.
+
+> **Pro required** for field filters and boolean operators. Exact substring match (`+term` / `"phrase"`) is free for all users.
 
 #### Text Subtypes
 
@@ -64,6 +66,7 @@ Super Clipboard supports Lucene-style query syntax with field filters, boolean o
 | Syntax | Meaning |
 |--------|---------|
 | `type:text` · `type:image` · `type:file` | Filter by clip type |
+| `type:(image OR file)` | Images or files (multi-value OR) |
 | `app:Chrome` · `app:WeChat*` | Filter by source app (supports `*` wildcard) |
 | `tag:work` | Filter by tag (contains match) |
 | `date:>7d` · `date:<30d` | Relative time: last 7 days / older than 30 days |
@@ -77,11 +80,21 @@ Super Clipboard supports Lucene-style query syntax with field filters, boolean o
 | `foo AND bar` | Both foo and bar required |
 | `foo OR bar` | Either foo or bar |
 | `NOT foo` · `-foo` | Exclude foo |
-| `+foo` | Require foo |
+| `+foo` | Require foo (exact substring) |
 | `(a OR b) AND c` | Grouping |
 | `"hello world"` | Phrase search |
 
-> Advanced search is a VIP feature. Click the "Advanced Search" button that appears when typing `:` in the search box for an interactive syntax reference.
+#### Exact Substring Match (free for all users)
+
+The inverted index works at the token level, so searching `index` won't match compounds like `reindexed` or `createIndexBuffer`. Use the following syntax to force a character-level substring scan:
+
+| Syntax | Meaning |
+|--------|---------|
+| `+index` | Results must contain the substring `index` (e.g. `reindexed`, `createIndexBuffer`) |
+| `"create index"` | Results must contain the exact phrase `create index` |
+| `+index -log` | Contains `index` and excludes `log` (`-log` requires Pro) |
+
+> `+term` does **not** trigger the Pro gate — any user can use it.
 
 ## Multi-select
 

@@ -26,9 +26,11 @@
 
 退出插件后，搜索状态会在默认 5 秒后清空（可在设置中调整或关闭）。
 
-### 高级搜索语法（Lucene 子集）
+### 高级搜索语法（Lucene 子集）{#高级搜索语法lucene-子集}
 
 Super 剪贴板支持类 Lucene 查询语法，可组合字段过滤、布尔运算和时间范围。
+
+> **Pro 专属**：字段过滤、布尔运算需要 Pro 订阅。精确子串匹配（`+term` / `"phrase"`）免费可用。
 
 #### 文本子类型
 
@@ -49,8 +51,8 @@ Super 剪贴板支持类 Lucene 查询语法，可组合字段过滤、布尔运
 
 #### 布尔属性
 
-| 语法 | 等价于 |
-|------|--------|
+| 语法 | 含义 |
+|------|------|
 | `is:pinned` | 条目已置顶 |
 | `is:starred` | 条目已收藏 |
 | `-is:pinned` | 条目未置顶 |
@@ -60,8 +62,9 @@ Super 剪贴板支持类 Lucene 查询语法，可组合字段过滤、布尔运
 | 语法 | 含义 |
 |------|------|
 | `type:text` · `type:image` · `type:file` | 按剪贴板类型筛选 |
+| `type:(image OR file)` | 图片或文件（多值 OR） |
 | `app:Chrome` · `app:WeChat*` | 按来源应用筛选（支持 `*` 通配） |
-| `tag:work` | 按标签筛选（包含匹配） |
+| `tag:工作` | 按标签筛选（包含匹配） |
 | `date:>7d` · `date:<30d` | 相对时间：最近 7 天 / 30 天前 |
 | `date:[2024-01-01 TO 2024-12-31]` | 绝对时间范围 |
 | `in:primary` · `in:remark` · `in:fileNames` | 限定全文搜索范围 |
@@ -73,11 +76,22 @@ Super 剪贴板支持类 Lucene 查询语法，可组合字段过滤、布尔运
 | `foo AND bar` | 同时包含 foo 和 bar |
 | `foo OR bar` | 包含 foo 或 bar |
 | `NOT foo` · `-foo` | 排除 foo |
-| `+foo` | 必须包含 foo |
+| `+foo` | 必须包含 foo（精确子串） |
 | `(a OR b) AND c` | 分组组合 |
 | `"hello world"` | 短语搜索 |
 
-> 高级搜索为 VIP 功能。语法速查可在搜索框中输入 `:` 后点击弹出的「高级搜索」按钮查看。
+#### 精确子串匹配（免费可用）
+
+倒排索引以词为单位，搜索 `index` 不会命中 `reindexed` 这类词内含 `index` 的复合词。
+使用以下语法可强制进行逐字符子串扫描：
+
+| 语法 | 含义 |
+|------|------|
+| `+index` | 结果必须包含子串 `index`（如 `reindexed`、`createIndexBuffer`） |
+| `"create index"` | 结果必须包含完整短语 `create index` |
+| `+index -log` | 包含 `index` 且不含 `log`（`-log` 是 Pro 功能） |
+
+> `+term` 不触发 Pro 闸门，任何用户均可使用。
 
 ## 多选模式
 
